@@ -1,7 +1,7 @@
-import Button from "@ui/Button";
+import "./App.css";
 
-const App = () => {
-  return <Button>Войти</Button>;
-};
+function App() {
+  return <div></div>;
+}
 
 export default App;
