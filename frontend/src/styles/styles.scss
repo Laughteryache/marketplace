@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Monsteratt", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: variables.$background-color;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+pre,
+a {
+  margin: 0;
+  color: variables.$color-black;
+  text-decoration: none;
+}
