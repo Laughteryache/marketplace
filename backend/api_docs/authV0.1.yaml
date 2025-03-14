@@ -1,0 +1,120 @@
+openapi: 3.0.3
+info:
+  title: User Authorization API
+  description: API для выполнения операций аутентификации и авторизации пользователей.
+  version: "1.0.0"
+
+servers:
+  - url: /api/v1/user_auth  # Пример URL, замените на действующий
+
+tags:
+  - name: User Authorization
+    description: Операции аутентификации пользователей
+
+paths:
+  /sign-up:
+    post:
+      tags:
+        - User Authorization
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя в системе.
+      requestBody:
+        description: Данные для регистрации пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignUpScheme'
+      responses:
+        "200":
+          description: Пользователь успешно зарегистрирован.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Access-токен для пользователя.
+                  refresh_token:
+                    type: string
+                    description: Refresh-токен для пользователя.
+        "400":
+          description: Пользователь с таким email уже существует.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "User with provided login or email already exists."
+
+  /sign-in:
+    post:
+      tags:
+        - User Authorization
+      summary: Авторизация пользователя
+      description: Авторизует существующего пользователя в системе.
+      requestBody:
+        description: Данные для авторизации пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignInScheme'
+      responses:
+        "200":
+          description: Пользователь успешно авторизован.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Access-токен для пользователя.
+                  refresh_token:
+                    type: string
+                    description: Refresh-токен для пользователя.
+        "401":
+          description: Неверный логин или пароль.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Incorrect login or password."
+
+components:
+  schemas:
+    UserSignUpScheme:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Электронная почта пользователя.
+        password:
+          type: string
+          format: password
+          description: Пароль пользователя.
+    UserSignInScheme:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Электронная почта пользователя.
+        password:
+          type: string
+          format: password
+          description: Пароль пользователя.
