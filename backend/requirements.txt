@@ -7,3 +7,4 @@ pydantic[email]==2.10.6
 pydantic-settings==2.8.1
 httpx==0.28.1
 pytest==8.3.5
+authx==1.4.1

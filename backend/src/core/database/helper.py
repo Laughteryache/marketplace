@@ -2,6 +2,7 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import (create_async_engine, AsyncEngine,
                                     async_sessionmaker, AsyncSession)
 from ..config import settings
+from loguru import logger
 
 
 class DatabaseHelper:
@@ -25,6 +26,7 @@ class DatabaseHelper:
             autocommit=False,
             expire_on_commit=False, )
 
+    @logger.catch
     async def dispose(self) -> None:
         await self.engine.dispose()
 
@@ -32,6 +34,7 @@ class DatabaseHelper:
         async with self.session_factory() as session:
             yield session
 
+    @logger.catch
     async def init_db(self) -> None:
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)

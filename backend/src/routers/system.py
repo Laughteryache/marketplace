@@ -1,9 +1,12 @@
 from fastapi import APIRouter
 from src.core.config import settings
 import time
+from loguru import logger
 
 router = APIRouter(tags=["system"])
 
+
+@logger.catch
 @router.get("/v1/api/ping")
 async def get_ping():
     return {
