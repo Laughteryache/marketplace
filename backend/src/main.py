@@ -1,11 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from src.core.config import settings
 from src.routers.system import router as system_router
 from src.routers.auth import router as auth_router
 from src.core.database.helper import db_helper
-from loguru import logger
+
+from loguru import logger # In the future, logging will occur on hosting instead of a log file
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 import time
@@ -25,16 +27,16 @@ main_app = FastAPI(lifespan=lifespan)
 
 main_app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.CORSSettings.allow_origins,
+    allow_creds=settings.CORSSettings.allow_creds,
+    allow_methods=settings.CORSSettings.allow_methods,
+    allow_headers=settings.CORSSettings.allow_headers,
 )
 
 main_app.include_router(system_router)
 main_app.include_router(auth_router)
 
-
+@logger.catch
 def start_server():
 
     uvicorn.run(
