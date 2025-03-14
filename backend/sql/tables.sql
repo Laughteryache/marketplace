@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"id" bigserial NOT NULL UNIQUE,
 	"login" varchar(25) NOT NULL UNIQUE,
 	"email" varchar(50) NOT NULL UNIQUE,
-	"hashed_password" varchar(50) NOT NULL,
+	"hashed_password" varchar(500) NOT NULL,
 	"role" varchar(10) NOT NULL,
 	"is_deleted" boolean NOT NULL,
 	PRIMARY KEY ("id")
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE TABLE IF NOT EXISTS "businesses" (
 	"id" bigserial NOT NULL UNIQUE,
 	"login" varchar(25) NOT NULL UNIQUE,
-	"hashed_password" varchar(50) NOT NULL,
+	"hashed_password" varchar(500) NOT NULL,
 	"email" varchar(50) NOT NULL,
 	"is_deleted" boolean NOT NULL,
 	PRIMARY KEY ("id")

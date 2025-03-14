@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.core.config import settings
+from core.config import settings
 import time
 from loguru import logger
 

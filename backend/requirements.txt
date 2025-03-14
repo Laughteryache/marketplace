@@ -1,4 +1,4 @@
-sqlalchemy==2.0.38
+sqlalchemy==2.0.39
 fastapi==0.115.11
 loguru==0.7.3
 asyncpg==0.30.0
@@ -8,3 +8,4 @@ pydantic-settings==2.8.1
 httpx==0.28.1
 pytest==8.3.5
 authx==1.4.1
+argon2-cffi==23.1.0

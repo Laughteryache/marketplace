@@ -1,13 +1,13 @@
 import asyncio
-
+from argon2 import PasswordHasher
 from authx import AuthX, TokenPayload
-from src.core.config import settings
+from core.config import settings
 from loguru import logger
 
 authx_security = AuthX(config=settings.jwt_tokens)
+ph = PasswordHasher()
 
 class JWTAuth:
-
     @staticmethod
     @logger.catch
     async def create_access(user_id: str) -> str:
@@ -25,3 +25,17 @@ class JWTAuth:
             return authx_security._decode_token(token=token)
         except:
             return 'Token expired'
+
+
+class HashSecurity:
+
+    @staticmethod
+    @logger.catch
+    async def get_hash(message: str) -> str:
+        return ph.hash(message)
+
+    @staticmethod
+    @logger.catch
+    async def verify_hash(message: str, hashed_message: str) -> bool:
+        try: return ph.verify(hashed_message, message)
+        except: return False

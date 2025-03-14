@@ -15,14 +15,12 @@ class UserSignUpScheme(BaseModel):
         return password
 
 class UserSignInScheme(BaseModel):
-    login: str | None = None
-    email: EmailStr | None = None
+    email: EmailStr
     password: str
 
 class BusinessSignUpScheme(BaseModel):
     pass
 
 class BusinessSignInScheme(BaseModel):
-    login: str | None = None
-    email: EmailStr | None = None
+    email: EmailStr
     password: str
