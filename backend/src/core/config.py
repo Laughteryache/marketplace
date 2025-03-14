@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 from time import time
 from loguru import logger
 from datetime import datetime, timedelta
+from typing import List
 
 class DatabaseSettings(BaseSettings):
     DATABASE_URL: str
@@ -22,12 +23,6 @@ class LoggerSettings(BaseSettings):
     compression: str = "zip"
     format: str = "{time} {level} {message}"
 
-class CORSSettings(BaseSettings):
-    allow_origins: list[str] = ["*"] # Link of Frontend. "*" -> all
-    allow_creds: bool = True # Request body. True -> allow
-    allow_methods: list[str] = ["*"] # Get, Post, Patch, Update, Delete. "*" -> all
-    allow_headers: list[str] = ["*"] # Header Body. "*" -> all
-
 class Settings(BaseSettings):
     SERVER_START_TIME: int
     SERVER_PORT: int = 8765
@@ -43,9 +38,9 @@ settings = Settings(
     SERVER_PORT=8765,
     IP_ADDRESS='127.0.0.1',
     db=DatabaseSettings(
-        DATABASE_URL='postgresql+asyncpg://postgres:postgres@localhost:5432/postgres',
-        POOL_SIZE=50,
-        MAX_OVERFLOW=10
+        DATABASE_URL='postgresql+asyncpg://postgres:Lolipop!2009@localhost:5432/postgres',
+        POOL_SIZE=500,
+        MAX_OVERFLOW=100
     ),
     prefix=RoutersPrefix(
         USER_AUTH='/v1/api/user/auth',
