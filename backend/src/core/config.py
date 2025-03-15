@@ -62,7 +62,7 @@ settings = Settings(
         JWT_REFRESH_COOKIE_NAME='refresh_token',
         JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=30),
         JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30),
-    )
+    ),
 )
 
 

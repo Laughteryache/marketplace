@@ -9,9 +9,8 @@ import time
 from core.database.functions import UsersDB
 from core.database.helper import db_helper
 from core.config import settings
-from core.schemes import UserSignUpScheme, UserSignInScheme
+from core.schemes import SignUpScheme, SignInScheme
 from services.security import JWTAuth
-from sqlalchemy.ext.horizontal_shard import set_shard_id
 
 router = APIRouter(
     prefix=settings.prefix.USER_AUTH,
@@ -20,17 +19,17 @@ router = APIRouter(
 
 @router.post('/sign-up')
 async def user_sign_up(
-        creds: UserSignUpScheme,
+        creds: SignUpScheme,
         #response: Response,
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
-    if not await UsersDB.check_exists(session, creds.email):
+    if not await UsersDB.check_exists(session=session, creds=creds):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User with provided login or email already exists.")
     uid = await UsersDB.register(session, creds)
-    access_token = await JWTAuth.create_access(user_id=uid)
-    refresh_token = await JWTAuth.create_refresh(user_id=uid)
+    access_token = await JWTAuth.create_access(user_id=uid, token_for='user')
+    refresh_token = await JWTAuth.create_refresh(user_id=uid, token_for='user')
     # response.set_cookie(
     #     key=settings.jwt_tokens.JWT_ACCESS_COOKIE_NAME,
     #     value=access_token)
@@ -44,7 +43,7 @@ async def user_sign_up(
 
 @router.post('/sign-in')
 async def user_sign_in(
-        creds: UserSignInScheme,
+        creds: SignInScheme,
         # response: Response,
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
@@ -55,8 +54,8 @@ async def user_sign_in(
                 detail="Incorrect login or password.")
         uid = await UsersDB.get_id(session=session,
                                         creds=creds)
-        access_token = await JWTAuth.create_access(user_id=uid)
-        refresh_token = await JWTAuth.create_refresh(user_id=uid)
+        access_token = await JWTAuth.create_access(user_id=uid, token_for='user')
+        refresh_token = await JWTAuth.create_refresh(user_id=uid, token_for='user')
         # response.set_cookie(
         #     key=settings.jwt_tokens.JWT_ACCESS_COOKIE_NAME,
         #     value=access_token)
