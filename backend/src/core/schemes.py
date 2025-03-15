@@ -29,3 +29,7 @@ class SignInScheme(BaseModel):
 class TokenInfo(BaseModel):
     access_token: str
     refresh_token: str | None = None
+
+class TokenPayloadModel(BaseModel):
+    role: str
+    uid: str

@@ -100,6 +100,18 @@ class BusinessDB:
             .where(Business.id==int(user_id)))
         return result.scalar()
 
+    @staticmethod
+    @logger.catch
+    async def get_balance(
+            business_id: str,
+            session: AsyncSession
+    ) -> int:
+        result = await session.execute(
+            select(BusinessFinance.balance)
+            .where(BusinessFinance.business_id==int(business_id)))
+        return int(result.scalar())
+
+
 
 class UsersDB:
 
@@ -194,3 +206,14 @@ class UsersDB:
             select(User)
             .where(User.id==int(user_id)))
         return result.scalar()
+
+    @staticmethod
+    @logger.catch
+    async def get_balance(
+            user_id: str,
+            session: AsyncSession
+    ) -> int:
+        result = await session.execute(
+            select(UsersBalance.balance)
+            .where(UsersBalance.user_id==int(user_id)))
+        return int(result.scalar())
