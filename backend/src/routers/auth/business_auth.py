@@ -25,7 +25,7 @@ async def business_sign_up(
 ) -> JSONResponse:
     if not await BusinessDB.check_exists(session, creds):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail="Business with provided login or email already exists.")
     business_id = await BusinessDB.register(session, creds)
     access_token = await JWTAuth.create_access(user_id=business_id, token_for='business')
@@ -51,7 +51,7 @@ async def business_sign_in(
                                              creds=creds):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect login or password."
+            detail="Incorrect email or password."
         )
     business_id = await BusinessDB.get_id(creds=creds,
                                           session=session)
