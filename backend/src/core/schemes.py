@@ -1,11 +1,11 @@
 import re
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, Field
 
 
-class UserSignUpScheme(BaseModel):
-    login: str
+class SignUpScheme(BaseModel):
+    login: str = Field(min_length=4,max_length=25)
     email: EmailStr
-    password: str
+    password: str = Field(max_length=40)
 
     @field_validator("password", check_fields=False)
     def validate_password(cls, password: str):
@@ -14,13 +14,6 @@ class UserSignUpScheme(BaseModel):
             raise ValueError
         return password
 
-class UserSignInScheme(BaseModel):
+class SignInScheme(BaseModel):
     email: EmailStr
-    password: str
-
-class BusinessSignUpScheme(BaseModel):
-    pass
-
-class BusinessSignInScheme(BaseModel):
-    email: EmailStr
-    password: str
+    password: str = Field(max_length=40)

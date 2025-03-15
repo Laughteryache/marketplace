@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, BigInteger, Boolean, SmallInteger, TIMESTAMP, ForeignKey
+from sqlalchemy import (Column, Integer, String, BigInteger,
+                        Boolean, SmallInteger, TIMESTAMP, ForeignKey, ARRAY)
 from sqlalchemy.orm import relationship, DeclarativeBase, declared_attr
 from sqlalchemy import MetaData
 
@@ -75,7 +76,7 @@ class UsersProfile(Base):
 class UsersCart(Base):
     __tablename__ = 'users_cart'
     user_id = Column(BigInteger, primary_key=True)
-    shopping_cart = Column(Integer, nullable=False)
+    shopping_cart = Column(ARRAY(Integer), nullable=False)
 
 class UsersBalance(Base):
     __tablename__ = 'users_balance'
@@ -155,4 +156,5 @@ class OrderPrice(Base):
 class OrderCart(Base):
     __tablename__ = 'order_cart'
     order_id = Column(BigInteger, primary_key=True)
-    shopping_cart = Column(Integer, nullable=False)
+    shopping_cart = Column(ARRAY(Integer), nullable=False)
+

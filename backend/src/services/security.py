@@ -10,13 +10,13 @@ ph = PasswordHasher()
 class JWTAuth:
     @staticmethod
     @logger.catch
-    async def create_access(user_id: str) -> str:
-        return authx_security.create_access_token(uid=str(user_id))
+    async def create_access(user_id: str, token_for: str) -> str:
+        return authx_security.create_access_token(uid=f'{token_for}:{user_id}')
 
     @staticmethod
     @logger.catch
-    async def create_refresh(user_id: str) -> str:
-        return authx_security.create_refresh_token(uid=str(user_id))
+    async def create_refresh(user_id: str, token_for: str) -> str:
+        return authx_security.create_refresh_token(uid=f'{token_for}:{user_id}')
 
     @staticmethod
     @logger.catch

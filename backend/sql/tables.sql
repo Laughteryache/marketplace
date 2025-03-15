@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "businesses" (
 	"id" bigserial NOT NULL UNIQUE,
 	"login" varchar(25) NOT NULL UNIQUE,
 	"hashed_password" varchar(500) NOT NULL,
-	"email" varchar(50) NOT NULL,
+	"email" varchar(50) NOT NULL UNIQUE,
 	"is_deleted" boolean NOT NULL,
 	PRIMARY KEY ("id")
 );
@@ -92,10 +92,10 @@ CREATE TABLE IF NOT EXISTS "business_finances" (
 
 CREATE TABLE IF NOT EXISTS "business_profile" (
 	"business_id" bigserial NOT NULL UNIQUE,
-	"title" varchar(50) NOT NULL,
-	"description" varchar(500) NOT NULL,
+	"title" varchar(50),
+	"description" varchar(500),
 	"logo_path" varchar(255),
-	"location" varchar(90) NOT NULL,
+	"location" varchar(90),
 	"date_joined" timestamp NOT NULL,
 	PRIMARY KEY ("business_id")
 );
