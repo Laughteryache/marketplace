@@ -1,0 +1,20 @@
+.header {
+  height: 144px;
+  width: 1220px;
+  border-radius: 15px;
+  justify-self: center;
+  display: flex;
+  background-color: variables.$color-white;
+
+  &_top {
+    padding: 0 25px 0 25px;
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.title {
+  cursor: pointer;
+}

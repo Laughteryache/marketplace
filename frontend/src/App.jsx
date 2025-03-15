@@ -1,7 +1,11 @@
-import Button from "@ui/Button";
+import Header from "@components/Header";
 
 const App = () => {
-  return <Button>Войти</Button>;
+  return (
+    <>
+      <Header />
+    </>
+  );
 };
 
 export default App;
