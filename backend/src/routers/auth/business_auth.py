@@ -3,13 +3,11 @@ from fastapi.responses import JSONResponse
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from secrets import compare_digest
-
-
 from core.database.functions import BusinessDB
 from core.database.helper import db_helper
 from core.config import settings
-from core.schemes import SignUpScheme, SignInScheme
+from core.schemes import SignUpScheme, SignInScheme, TokenInfo
+
 from services.security import JWTAuth
 
 router = APIRouter(
@@ -36,10 +34,10 @@ async def business_sign_up(
     # response.set_cookie(
     #     key=settings.jwt_tokens.JWT_REFRESH_COOKIE_NAME,
     #     value=refresh_token)
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }
+    return TokenInfo(
+        refresh_token=refresh_token,
+        access_token=access_token
+    )
 
 @router.post('/sign-in')
 async def business_sign_in(
@@ -63,7 +61,7 @@ async def business_sign_in(
     # response.set_cookie(
     #     key=settings.jwt_tokens.JWT_REFRESH_COOKIE_NAME,
     #     value=refresh_token)
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }
+    return TokenInfo(
+        refresh_token=refresh_token,
+        access_token=access_token
+    )

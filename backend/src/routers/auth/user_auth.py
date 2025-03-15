@@ -3,14 +3,12 @@ from fastapi.responses import JSONResponse
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from secrets import compare_digest
-import time
-
 from core.database.functions import UsersDB
 from core.database.helper import db_helper
 from core.config import settings
-from core.schemes import SignUpScheme, SignInScheme
+from core.schemes import SignUpScheme, SignInScheme, TokenInfo
 from services.security import JWTAuth
+
 
 router = APIRouter(
     prefix=settings.prefix.USER_AUTH,
@@ -20,7 +18,7 @@ router = APIRouter(
 @router.post('/sign-up')
 async def user_sign_up(
         creds: SignUpScheme,
-        #response: Response,
+        response: Response,
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if not await UsersDB.check_exists(session=session, creds=creds):
@@ -30,16 +28,16 @@ async def user_sign_up(
     uid = await UsersDB.register(session, creds)
     access_token = await JWTAuth.create_access(user_id=uid, token_for='user')
     refresh_token = await JWTAuth.create_refresh(user_id=uid, token_for='user')
-    # response.set_cookie(
-    #     key=settings.jwt_tokens.JWT_ACCESS_COOKIE_NAME,
-    #     value=access_token)
-    # response.set_cookie(
-    #     key=settings.jwt_tokens.JWT_REFRESH_COOKIE_NAME,
-    #     value=refresh_token)
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    }
+    response.set_cookie(
+        key=settings.jwt_tokens.JWT_ACCESS_COOKIE_NAME,
+        value=access_token)
+    response.set_cookie(
+        key=settings.jwt_tokens.JWT_REFRESH_COOKIE_NAME,
+        value=refresh_token)
+    return TokenInfo(
+        refresh_token=refresh_token,
+        access_token=access_token
+    )
 
 @router.post('/sign-in')
 async def user_sign_in(
@@ -62,7 +60,7 @@ async def user_sign_in(
         # response.set_cookie(
         #     key=settings.jwt_tokens.JWT_REFRESH_COOKIE_NAME,
         #     value=refresh_token)
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token
-        }
+        return TokenInfo(
+            refresh_token=refresh_token,
+            access_token=access_token
+        )

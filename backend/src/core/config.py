@@ -2,8 +2,8 @@ from authx import AuthXConfig
 from pydantic_settings import BaseSettings
 from time import time
 from loguru import logger
-from datetime import datetime, timedelta
-from typing import List
+from datetime import timedelta
+
 
 class DatabaseSettings(BaseSettings):
     DATABASE_URL: str
@@ -13,6 +13,8 @@ class DatabaseSettings(BaseSettings):
 class RoutersPrefix(BaseSettings):
     USER_AUTH: str
     BUSINESS_AUTH: str
+    USER_INTERFACE: str
+    TOKEN_AUTH: str
 
 class LoggerSettings(BaseSettings):
     filename: str = "app"
@@ -44,7 +46,9 @@ settings = Settings(
     ),
     prefix=RoutersPrefix(
         USER_AUTH='/v1/api/user/auth',
-        BUSINESS_AUTH='/v1/api/business/auth'
+        BUSINESS_AUTH='/v1/api/business/auth',
+        USER_INTERFACE='/v1/api/ui',
+        TOKEN_AUTH='/v1/api/auth-utils'
     ),
     logger=LoggerSettings(
         filename="app",
@@ -74,3 +78,4 @@ logger.add(
     rotation=settings.logger.rotation,
     compression=settings.logger.compression,
 )
+
