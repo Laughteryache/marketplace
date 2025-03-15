@@ -25,7 +25,7 @@ async def user_sign_up(
 ) -> JSONResponse:
     if not await UsersDB.check_exists(session=session, creds=creds):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail="User with provided login or email already exists.")
     uid = await UsersDB.register(session, creds)
     access_token = await JWTAuth.create_access(user_id=uid, token_for='user')
@@ -51,7 +51,7 @@ async def user_sign_in(
                                              creds=creds):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect login or password.")
+                detail="Incorrect email or password.")
         uid = await UsersDB.get_id(session=session,
                                         creds=creds)
         access_token = await JWTAuth.create_access(user_id=uid, token_for='user')

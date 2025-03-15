@@ -1,0 +1,135 @@
+openapi: 3.0.1
+info:
+  title: Business Authorization API
+  version: "1.0.0"
+  description: |
+    API для авторизации бизнеса. Содержит эндпоинты для регистрации и авторизации организаций.
+paths:
+  /business-auth/sign-up:
+    post:
+      summary: Регистрация компании
+      tags:
+        - Business Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpScheme'
+      responses:
+        "200":
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Токен доступа для авторизации.
+                  refresh_token:
+                    type: string
+                    description: Рефреш-токен для обновления доступа.
+        "409":
+          description: Бизнес с указанными данными уже существует.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Business with provided login or email already exists."
+        "400":
+          description: "Возможные проблемы: некорректный пароль, email или логин"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character."
+
+
+
+  /business-auth/sign-in:
+    post:
+      summary: Авторизация компании
+      tags:
+        - Business Authorization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInScheme'
+      responses:
+        "200":
+          description: Успешная авторизация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Токен доступа для авторизации.
+                  refresh_token:
+                    type: string
+                    description: Рефреш-токен для обновления доступа.
+        "401":
+          description: Некорректный логин или пароль.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Incorrect email or password."
+        "400":
+          description: "Возможные проблемы: некорректная длина пароля, email"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Bad Request"
+
+
+components:
+  schemas:
+    SignUpScheme:
+      type: object
+      required:
+        - login
+        - password
+        - email
+      properties:
+        login:
+          type: string
+          example: "business123"
+        password:
+          type: string
+          format: password
+          example: "secretpassword123"
+        email:
+          type: string
+          format: email
+          example: "business@example.com"
+    SignInScheme:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: "business123"
+        password:
+          type: string
+          format: password
+          example: "secretpassword123"
