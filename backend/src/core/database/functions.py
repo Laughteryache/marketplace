@@ -89,6 +89,18 @@ class BusinessDB:
         db_hashed_password = result.scalar()
         return await HashSecurity.verify_hash(message=creds.password, hashed_message=db_hashed_password)
 
+    @staticmethod
+    @logger.catch
+    async def get_data_by_id(
+            user_id: str,
+            session: AsyncSession
+    ) -> Business:
+        result = await session.execute(
+            select(Business)
+            .where(Business.id==int(user_id)))
+        return result.scalar()
+
+
 class UsersDB:
 
     @staticmethod
@@ -170,4 +182,15 @@ class UsersDB:
             select(User.id)
             .where(User.email==creds.email)
         )
+        return result.scalar()
+
+    @staticmethod
+    @logger.catch
+    async def get_data_by_id(
+            user_id: str,
+            session: AsyncSession
+    ) -> User:
+        result = await session.execute(
+            select(User)
+            .where(User.id==int(user_id)))
         return result.scalar()
