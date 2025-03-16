@@ -25,6 +25,7 @@ class LoggerSettings(BaseSettings):
     compression: str = "zip"
     format: str = "{time} {level} {message}"
 
+
 class Settings(BaseSettings):
     SERVER_START_TIME: int
     SERVER_PORT: int = 8765
@@ -33,6 +34,7 @@ class Settings(BaseSettings):
     prefix: RoutersPrefix
     logger: LoggerSettings
     jwt_tokens: AuthXConfig
+
 
 
 settings = Settings(

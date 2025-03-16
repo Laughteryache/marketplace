@@ -88,3 +88,5 @@ cython_debug/
 /.idea/sqldialects.xml
 /.idea/swagger-settings.xml
 /.idea/vcs.xml
+*.json
+super_secret.py
