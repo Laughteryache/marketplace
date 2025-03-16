@@ -9,3 +9,9 @@ httpx==0.28.1
 pytest==8.3.5
 authx==1.4.1
 argon2-cffi==23.1.0
+google-api-core==2.24.2
+google-auth==2.38.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+google-api-python-client==2.164.0
+googleapis-common-protos==1.69.1
