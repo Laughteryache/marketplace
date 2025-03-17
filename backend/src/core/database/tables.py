@@ -96,7 +96,7 @@ class BusinessProfile(Base):
     business_id = Column(BigInteger, primary_key=True)
     title = Column(String(50), nullable=False)
     description = Column(String(500), nullable=False)
-    logo_path = Column(String(255))
+    logo_id = Column(String(255))
     location = Column(String(90), nullable=False)
     date_joined = Column(TIMESTAMP, nullable=False)
 
