@@ -1,5 +1,3 @@
-import { ReactComponent as Login } from "@assets/login.svg?svgr";
-
 import Text from "@ui/Text";
 
 const HeaderTop = () => {
@@ -10,9 +8,7 @@ const HeaderTop = () => {
       <Text tag="h1" view="title" color="blue" weight="bold" className="title">
         MarketPlace
       </Text>
-      <div className="log_menu">
-        <Login />
-      </div>
+      <div className="log_menu"></div>
     </div>
   );
 };

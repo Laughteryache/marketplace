@@ -78,3 +78,15 @@ dmypy.json
 cython_debug/
 .ruff_cache/
 .pypirc
+/.idea/.gitignore
+/.idea/backend.iml
+/.idea/dataSources.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/sqldialects.xml
+/.idea/swagger-settings.xml
+/.idea/vcs.xml
+*.json
+super_secret.py
