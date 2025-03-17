@@ -1,5 +1,6 @@
 from sqlalchemy import (Column, Integer, String, BigInteger,
                         Boolean, SmallInteger, TIMESTAMP, ForeignKey, ARRAY)
+
 from sqlalchemy.orm import relationship, DeclarativeBase, declared_attr
 from sqlalchemy import MetaData
 
