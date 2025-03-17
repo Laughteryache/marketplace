@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS "business_profile" (
 	"business_id" bigserial NOT NULL UNIQUE,
 	"title" varchar(50),
 	"description" varchar(500),
-	"logo_path" varchar(255),
+	"logo_id" varchar(255),
 	"location" varchar(90),
 	"date_joined" timestamp NOT NULL,
 	PRIMARY KEY ("business_id")

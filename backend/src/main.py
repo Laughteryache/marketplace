@@ -10,6 +10,7 @@ from routers.auth.user_auth import router as user_auth_router
 from routers.auth.business_auth import router as business_auth_router
 from routers.auth.token_auth import router as token_auth_router
 from routers.profile.user_interface import router as ui_router
+from routers.profile.images import router as avatar_router
 
 from loguru import logger  # In the future, logging will occur on hosting instead of a log file
 from contextlib import asynccontextmanager
@@ -47,6 +48,7 @@ main_app.include_router(user_auth_router)
 main_app.include_router(business_auth_router)
 main_app.include_router(token_auth_router)
 main_app.include_router(ui_router)
+main_app.include_router(avatar_router)
 
 
 @logger.catch

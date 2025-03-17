@@ -111,6 +111,20 @@ class BusinessDB:
             .where(BusinessFinance.business_id==int(business_id)))
         return int(result.scalar())
 
+    @staticmethod
+    @logger.catch
+    async def save_avatar_id(
+            file_id: str,
+            session: AsyncSession,
+            business_id: str
+    ) -> None:
+         await session.execute(
+             update(BusinessProfile)
+             .where(BusinessProfile.business_id==int(business_id))
+             .values(logo_id=file_id)
+         )
+         await session.commit()
+
 
 
 class UsersDB:
