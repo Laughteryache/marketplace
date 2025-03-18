@@ -51,9 +51,9 @@ settings = Settings(
     prefix=RoutersPrefix(
         USER_AUTH='/v1/api/user/auth',
         BUSINESS_AUTH='/v1/api/business/auth',
-        USER_INTERFACE='/v1/api/ui',
-        TOKEN_AUTH='/v1/api/auth-utils',
-        IMAGE_UPLOAD='/v1/api/images',
+        USER_INTERFACE='/v1/api',
+        TOKEN_AUTH='/v1/api/ui',
+        IMAGE_UPLOAD='/v1/api/business/images',
         BUSINESS_PHOTOS=''
     ),
     logger=LoggerSettings(

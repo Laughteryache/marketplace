@@ -19,7 +19,7 @@ router = APIRouter(
     tags=["Images"]
 )
 
-@router.post('/business/upload')
+@router.post('/')
 async def upload_business_image(
         token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
         session: AsyncSession = Depends(db_helper.get_async_session),
@@ -42,7 +42,7 @@ async def upload_business_image(
         }
     )
 
-@router.get('/business/get')
+@router.get('/')
 async def get_business_image(
         id: str,
         session: AsyncSession = Depends(db_helper.get_async_session)
