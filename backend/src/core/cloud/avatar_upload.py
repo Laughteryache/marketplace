@@ -50,7 +50,6 @@ async def upload_file(file_name, folder_id=None):
             response_data = response.json()
 
     file_id = response_data.get("id")
-    print(f"Файл загружен! ID: {file_id}")
     return file_id
 
 

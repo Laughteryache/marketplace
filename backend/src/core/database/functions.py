@@ -11,7 +11,8 @@ from loguru import logger
 from ..config import settings
 from .helper import db_helper
 from .tables import *
-from ..schemes import SignUpScheme, SignInScheme
+from ..schemes import SignUpScheme, SignInScheme, BusinessProfileScheme
+
 from services.security import HashSecurity
 
 
@@ -92,18 +93,18 @@ class BusinessDB:
     @staticmethod
     @logger.catch
     async def get_data_by_id(
-            user_id: str,
+            business_id: id,
             session: AsyncSession
     ) -> Business:
         result = await session.execute(
             select(Business)
-            .where(Business.id==int(user_id)))
+            .where(Business.id==int(business_id)))
         return result.scalar()
 
     @staticmethod
     @logger.catch
     async def get_balance(
-            business_id: str,
+            business_id: id,
             session: AsyncSession
     ) -> int:
         result = await session.execute(
@@ -116,7 +117,7 @@ class BusinessDB:
     async def save_avatar_id(
             file_id: str,
             session: AsyncSession,
-            business_id: str
+            business_id: id
     ) -> None:
          await session.execute(
              update(BusinessProfile)
@@ -125,7 +126,32 @@ class BusinessDB:
          )
          await session.commit()
 
+    @staticmethod
+    @logger.catch
+    async def update_profile(
+            creds: BusinessProfileScheme,
+            business_id: id,
+            session: AsyncSession
+    ) -> None:
+        await session.execute(
+            update(BusinessProfile)
+            .where(BusinessProfile.business_id==int(business_id))
+            .values(
+                title=creds.title,
+                description=creds.description,
+                location=creds.location))
+        await session.commit()
 
+    @staticmethod
+    @logger.catch
+    async def get_profile(
+            id: id,
+            session: AsyncSession
+    ) -> BusinessProfile:
+        result = await session.execute(
+            select(BusinessProfile)
+            .where(BusinessProfile.business_id==int(id)))
+        return result.scalar()
 
 class UsersDB:
 
@@ -177,7 +203,7 @@ class UsersDB:
                 shopping_cart=[]),
             UsersProfile(
                 user_id=user_id,
-                last_login=datetime.datetime.now(),
+                last_login=datetime.datetime.utcnow(),
                 date_joined=datetime.datetime.utcnow(),
                 location='Чайковский')
         ]

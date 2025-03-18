@@ -53,7 +53,7 @@ settings = Settings(
         BUSINESS_AUTH='/v1/api/business/auth',
         USER_INTERFACE='/v1/api/ui',
         TOKEN_AUTH='/v1/api/auth-utils',
-        IMAGE_UPLOAD='/v1/api/ui/images',
+        IMAGE_UPLOAD='/v1/api/images',
         BUSINESS_PHOTOS=''
     ),
     logger=LoggerSettings(

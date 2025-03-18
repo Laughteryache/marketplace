@@ -55,6 +55,4 @@ async def refresh_access_token(
             detail="Invalid refresh token.")
 
     access_token = await JWTAuth.create_access(user_id=uid, token_for=token_owner)
-    return TokenInfo(
-        access_token=access_token
-    )
+    return TokenInfo(access_token=access_token)
