@@ -12,7 +12,7 @@ from routers.auth.token_auth import router as token_auth_router
 from routers.profile.user_interface import router as ui_router
 from routers.profile.images import router as avatar_router
 
-from loguru import logger  # In the future, logging will occur on hosting instead of a log file
+from loguru import logger  # In the future, logging will occur on hosting instead of a log file # ElasticSearch in progress!
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 import time

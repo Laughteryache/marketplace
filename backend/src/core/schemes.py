@@ -33,3 +33,8 @@ class TokenInfo(BaseModel):
 class TokenPayloadModel(BaseModel):
     role: str
     uid: str
+
+class BusinessProfileScheme(BaseModel):
+    title: str = Field(min_length=1, max_length=50)
+    description: str = Field(min_length=1, max_length=500)
+    location: str = Field(min_length=1, max_length=90)

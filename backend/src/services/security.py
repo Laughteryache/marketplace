@@ -70,7 +70,7 @@ async def check_uploaded_file(
     if file_extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported file format: {file_extension}. Allowed formats are {ALLOWED_EXTENSIONS}")
+            detail=f"Unsupported file format: {file_extension!r}. Allowed formats are {ALLOWED_EXTENSIONS}")
     if file.size > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail=f"File size exceeds {MAX_FILE_SIZE / 1024 / 1024} MB.")
 
