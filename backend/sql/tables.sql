@@ -195,3 +195,6 @@ ALTER TABLE "reviews_data" ADD CONSTRAINT "reviews_data_fk0" FOREIGN KEY ("id") 
 ALTER TABLE "order_date" ADD CONSTRAINT "order_date_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id");
 ALTER TABLE "order_price" ADD CONSTRAINT "order_price_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id");
 ALTER TABLE "order_cart" ADD CONSTRAINT "order_cart_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id");
+
+INSERT INTO categories (id, name, description, is_deleted)
+VALUES (1, 'all', 'All goods!', False)

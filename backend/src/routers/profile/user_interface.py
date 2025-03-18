@@ -24,7 +24,7 @@ class BalanceInfo(BaseModel):
     balance: int
 
 
-@router.get('/balance')
+@router.get('/ui/balance')
 async def get_user_balance(
         token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
         session: AsyncSession = Depends(db_helper.get_async_session)
@@ -43,7 +43,7 @@ async def get_user_balance(
             detail="Invalid access token.")
 
 
-@router.patch('/business/profile')
+@router.patch('/business/profile/')
 async def patch_business_profile(
         creds: BusinessProfileScheme,
         token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
@@ -73,7 +73,7 @@ class ProfileInfo(BaseModel):
     location: str
     date_joined: str
 
-@router.get('/business/profile', response_model=ProfileInfo, response_model_exclude_none=True)
+@router.get('/business/profile/', response_model=ProfileInfo, response_model_exclude_none=True)
 async def get_business_profile(
         id: int,
         session: AsyncSession = Depends(db_helper.get_async_session)
