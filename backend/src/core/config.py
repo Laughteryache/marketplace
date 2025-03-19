@@ -16,7 +16,7 @@ class RoutersPrefix(BaseSettings):
     USER_INTERFACE: str
     TOKEN_AUTH: str
     IMAGE_UPLOAD: str
-    BUSINESS_PHOTOS: str
+    PRODUCTS: str
 
 class LoggerSettings(BaseSettings):
     filename: str = "app"
@@ -54,7 +54,7 @@ settings = Settings(
         USER_INTERFACE='/v1/api',
         TOKEN_AUTH='/v1/api/ui',
         IMAGE_UPLOAD='/v1/api/business/images',
-        BUSINESS_PHOTOS=''
+        PRODUCTS='/v1/api/products'
     ),
     logger=LoggerSettings(
         filename="app",
