@@ -87,14 +87,14 @@ async def get_business_profile(
     logo_id = profile.logo_id
     if logo_id:
         return ProfileInfo(
-            id=profile.business_id,
+            id=id,
             title=profile.title,
             description=profile.description,
             file_link=f"https://drive.google.com/file/d/{logo_id}/preview",
             location=profile.location,
             date_joined=f"{date_joined}")
     return ProfileInfo(
-        id=profile.business_id,
+        id=id,
         title=profile.title,
         description=profile.description,
         location=profile.location,

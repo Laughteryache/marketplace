@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS "business_profile" (
 CREATE TABLE IF NOT EXISTS "product_data" (
 	"product_id" bigint NOT NULL UNIQUE,
 	"description" varchar(500) NOT NULL,
-	"logo_path" varchar(255) NOT NULL,
+	"logo_path" varchar(255),
 	"sex" varchar(15) NOT NULL,
 	"adult_only" boolean NOT NULL,
 	PRIMARY KEY ("product_id")

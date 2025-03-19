@@ -111,7 +111,7 @@ class ProductData(Base):
 class ProductQuantity(Base):
     __tablename__ = 'product_quanity'
     product_id = Column(BigInteger, primary_key=True)
-    quantity = Column(BigInteger)
+    quanity = Column(BigInteger)
 
 class PromocodeDiscount(Base):
     __tablename__ = 'promocode_discount'
