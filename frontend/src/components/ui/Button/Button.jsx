@@ -7,13 +7,20 @@ import "./Button.scss";
 const Button = ({
   className,
   children,
+  view = "normal",
+  size = "medium",
   loading = false,
   disabled = false,
   ...props
 }) => {
   return (
     <button
-      className={cn(className, "button", disabled && "button_disabled")}
+      className={cn(
+        className,
+        "button",
+        disabled && "button_disabled",
+        size && `button_size_${size}`
+      )}
       disabled={disabled || loading}
       {...props}
     >

@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), svgr()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
+      "@src": path.resolve(__dirname, "src"),
       "@components": path.resolve(__dirname, "src/components"),
       "@ui": path.resolve(__dirname, "src/components/ui"),
       "@assets": path.resolve(__dirname, "src/assets"),

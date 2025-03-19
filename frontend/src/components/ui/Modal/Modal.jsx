@@ -1,22 +1,23 @@
 import { createPortal } from "react-dom";
-import { useRef, useEffect } from "react";
 
 import "./Modal.scss";
 
-const Modal = ({ children, isOpened }) => {
-  const dialog = useRef();
+const Modal = ({ isOpen, onClose, children }) => {
 
-  useEffect(() => {
-    if (isOpened) {
-      dialog.current.showModal();
-    } else {
-      dialog.current.close();
-    }
-  }, [isOpened]);
+  if (!isOpen) return null;
 
   return createPortal(
-    <dialog ref={dialog}>{children}</dialog>,
-    document.getElementById("modal")
+    <div className="modal">
+      <div className="modal_content">
+        <button className="modal_button_close" onClick={onClose}>
+          &times
+        </button>
+
+        {children}
+      </div>
+      <div className="modal_overlay" onClick={onClose}></div>
+    </div>,
+    document.body
   );
 };
 

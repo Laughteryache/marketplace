@@ -10,11 +10,7 @@ import Modal from "@ui/Modal";
 import "./HeaderTop.scss";
 
 const HeaderTop = () => {
-  const [modal, setModal] = useState(false);
-
-  const openModal = () => {
-    setModal(true);
-  };
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="header_top">
@@ -22,12 +18,9 @@ const HeaderTop = () => {
         MarketPlace
       </Text>
       <div className="header_menu">
-        <MenuButton logo={Login} onclick={openModal}>
+        <MenuButton logo={Login} handleClick={() => setIsOpen(true)}>
           Войти
         </MenuButton>
-        <Modal isOpened={modal}>
-          <h3>HELLO</h3>
-        </Modal>
         <MenuButton logo={Heart}>Избранное</MenuButton>
         <MenuButton logo={Box}>Заказы</MenuButton>
       </div>
