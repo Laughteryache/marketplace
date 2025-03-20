@@ -1,12 +1,31 @@
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
-router = APIRouter()
+from global_dependencies import TokenPayloadModel, get_payload_by_access_token
+from global_config import settings
 
-@router.post('/')
+from cloud.file_uploader import get_new_avatar_id
+from db_core.helper import db_helper
+
+from .dependencies import check_uploaded_file
+from .db import BusinessDB
+from .models import BusinessProfileScheme, ProfileInfo
+from .utils import convert_to_ekb_time
+
+router = APIRouter(
+    tags=["profile"],
+    prefix=settings.prefix.PROFILE,
+)
+
+@router.put('/business/image')
 async def upload_business_image(
         token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
         session: AsyncSession = Depends(db_helper.get_async_session),
         picture_name: UploadFile = Depends(check_uploaded_file)
 ) -> JSONResponse:
+    if not token_payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,)
     if token_payload.role != 'business':
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -15,8 +34,7 @@ async def upload_business_image(
     await BusinessDB.save_avatar_id(
         file_id=file_id,
         session=session,
-        business_id=token_payload.uid
-    )
+        business_id=token_payload.uid)
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={
@@ -24,13 +42,16 @@ async def upload_business_image(
         }
     )
 
-@router.get('/')
+@router.get('/business/image')
 async def get_business_image(
         id: str,
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     avatar_id = await BusinessDB.get_profile(id, session)
-    if avatar_id:
+    if not avatar_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+
+    if avatar_id.logo_id:
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={
@@ -43,26 +64,22 @@ async def get_business_image(
     )
 
 
-@router.get('/ui/balance')
+@router.get('/balance')
 async def get_user_balance(
         token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if token_payload.role == 'user':
-        user_id = token_payload.uid
-        user_balance = await UsersDB.get_balance(user_id=user_id, session=session)
-        return BalanceInfo(balance=user_balance)
+        return {'balance': await UsersDB.get_balance(user_id=token_payload.uid, session=session)}
     elif token_payload.role == 'business':
-        business_id = token_payload.uid
-        business_balance = await BusinessDB.get_balance(business_id=business_id, session=session)
-        return BalanceInfo(balance=business_balance)
+        return {'balance': await BusinessDB.get_balance(business_id=token_payload.uid, session=session)}
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid access token.")
 
 
-@router.patch('/business/profile/')
+@router.patch('/business')
 async def patch_business_profile(
         creds: BusinessProfileScheme,
         token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
@@ -84,15 +101,7 @@ async def patch_business_profile(
         }
     )
 
-class ProfileInfo(BaseModel):
-    id: int
-    title: str
-    description: str
-    file_link: str = None
-    location: str
-    date_joined: str
-
-@router.get('/business/profile/', response_model=ProfileInfo, response_model_exclude_none=True)
+@router.get('/business', response_model=ProfileInfo, response_model_exclude_none=True)
 async def get_business_profile(
         id: int,
         session: AsyncSession = Depends(db_helper.get_async_session)

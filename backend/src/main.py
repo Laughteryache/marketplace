@@ -6,6 +6,7 @@ from global_config import settings
 
 from auth.router import router as auth_router
 from products.router import router as product_router
+from profile.router import router as profile_router
 
 from loguru import logger  # In the future, logging will occur on hosting instead of a log file # ElasticSearch in progress!
 from contextlib import asynccontextmanager
@@ -44,6 +45,7 @@ main_app.add_middleware(
 
 main_app.include_router(auth_router)
 main_app.include_router(product_router)
+main_app.include_router(profile_router)
 
 @main_app.get("/v1/api/ping")
 async def get_ping():

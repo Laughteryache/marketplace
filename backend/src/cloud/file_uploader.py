@@ -13,35 +13,11 @@ from loguru import logger
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
 PERMISSION_URL = "https://www.googleapis.com/drive/v3/files/{}/permissions"
-UPLOAD_DIR = "src/uploaded_files"  # Указываем фиксированную директорию
-ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg"}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # ограничение 5 MB
+UPLOAD_DIR = "src/uploaded_files"
 
 async def random_file_name() -> str:
     return ''.join(random.choices(string.ascii_letters, k=50))
 
-async def check_uploaded_file(
-        file: UploadFile = File(...)
-) -> str | HTTPException:
-    filename = file.filename
-    file_extension = filename[filename.rfind("."):].lower()  # Получаем расширение файла
-    if file_extension not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file format: {file_extension!r}. Allowed formats are {ALLOWED_EXTENSIONS}")
-    if file.size > MAX_FILE_SIZE:
-        raise HTTPException(status_code=400, detail=f"File size exceeds {MAX_FILE_SIZE / 1024 / 1024} MB.")
-
-    try:
-        new_file_name = await random_file_name()
-        new_file_path = f"src/uploaded_files/{new_file_name}{file_extension}"
-        content = await file.read()
-        async with aiofiles.open(new_file_path, "wb") as f:
-            await f.write(content)
-
-        return f'{new_file_name}{file_extension}'
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @logger.catch
@@ -49,15 +25,13 @@ async def get_access_token():
     credentials = service_account.Credentials.from_service_account_info(
         json.loads(SERVICE_ACCOUNT_INFO), scopes=SCOPES
     )
-    # Обновляем токен с помощью Request
     credentials.refresh(Request())
     return credentials.token
 
 
 @logger.catch
 async def upload_file(file_name, folder_id=None):
-    """Асинхронно загружает файл в Google Drive"""
-    file_path = os.path.join(UPLOAD_DIR, file_name)  # Формируем полный путь к файлу
+    file_path = os.path.join(UPLOAD_DIR, file_name)
     token = await get_access_token()
 
     # Метаданные файла
@@ -99,12 +73,11 @@ async def make_file_public(file_id):
 
 @logger.catch
 async def delete_file(file_name):
-    """Асинхронно удаляет файл из локальной директории uploaded_files"""
-    file_path = os.path.join(UPLOAD_DIR, file_name)  # Формируем путь к файлу
+    file_path = os.path.join(UPLOAD_DIR, file_name)
     try:
         loop = asyncio.get_event_loop()
-        if os.path.exists(file_path):  # Проверяем, существует ли файл
-            await loop.run_in_executor(None, os.remove, file_path)  # Удаляем файл асинхронно
+        if os.path.exists(file_path):
+            await loop.run_in_executor(None, os.remove, file_path)
             logger.info(f"Файл {file_name} успешно удалён из {UPLOAD_DIR}")
         else:
             logger.warning(f"Файл {file_name} не найден в {UPLOAD_DIR}")
@@ -114,7 +87,6 @@ async def delete_file(file_name):
 
 @logger.catch
 async def get_new_avatar_id(file_name):
-    """Загружает файл, делает его публичным и удаляет локальную копию"""
     try:
         file_id = await upload_file(file_name)
         link = await make_file_public(file_id)

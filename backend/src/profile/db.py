@@ -1,4 +1,13 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import update, select
+from loguru import logger
+from typing import List
+
+from db_core.tables import BusinessProfile, BusinessFinance, UsersBalance
+from .models import BusinessProfileScheme
+
 class BusinessDB:
+    @staticmethod
     @logger.catch
     async def save_avatar_id(
             file_id: str,
@@ -12,6 +21,7 @@ class BusinessDB:
         )
         await session.commit()
 
+    @staticmethod
     @logger.catch
     async def update_profile(
             creds: BusinessProfileScheme,
@@ -27,6 +37,7 @@ class BusinessDB:
                 location=creds.location))
         await session.commit()
 
+    @staticmethod
     @logger.catch
     async def get_profile(
             id: id,
@@ -37,13 +48,13 @@ class BusinessDB:
             .where(BusinessProfile.business_id == int(id)))
         return result.scalar()
 
-
+    @staticmethod
     @logger.catch
     async def get_categories(session: AsyncSession) -> List[int]:
         result = await session.execute(select(Category.id))
         return result.scalars().all()
 
-
+    @staticmethod
     @logger.catch
     async def get_balance(
             business_id: id,
@@ -66,27 +77,4 @@ class UsersDB:
             select(UsersBalance.balance)
             .where(UsersBalance.user_id==int(user_id)))
         return int(result.scalar())
-
-    @staticmethod
-    @logger.catch
-    async def get_id(
-            session: AsyncSession,
-            creds: SignInScheme
-    ) -> str:
-        result = await session.execute(
-            select(User.id)
-            .where(User.email==creds.email)
-        )
-        return result.scalar()
-
-    @staticmethod
-    @logger.catch
-    async def get_data_by_id(
-            user_id: str,
-            session: AsyncSession
-    ) -> User:
-        result = await session.execute(
-            select(User)
-            .where(User.id==int(user_id)))
-        return result.scalar()
 
