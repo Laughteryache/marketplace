@@ -1,4 +1,3 @@
-from authx import AuthXConfig
 from pydantic_settings import BaseSettings
 from time import time
 from loguru import logger
@@ -11,12 +10,8 @@ class DatabaseSettings(BaseSettings):
     MAX_OVERFLOW: int = 10
 
 class RoutersPrefix(BaseSettings):
-    USER_AUTH: str
-    BUSINESS_AUTH: str
-    USER_INTERFACE: str
-    TOKEN_AUTH: str
-    IMAGE_UPLOAD: str
-    PRODUCTS: str
+    AUTH: str
+
 
 class LoggerSettings(BaseSettings):
     filename: str = "app"
@@ -35,7 +30,6 @@ class Settings(BaseSettings):
     db: DatabaseSettings
     prefix: RoutersPrefix
     logger: LoggerSettings
-    jwt_tokens: AuthXConfig
 
 
 
@@ -49,12 +43,8 @@ settings = Settings(
         MAX_OVERFLOW=100
     ),
     prefix=RoutersPrefix(
-        USER_AUTH='/v1/api/user/auth',
-        BUSINESS_AUTH='/v1/api/business/auth',
-        USER_INTERFACE='/v1/api',
-        TOKEN_AUTH='/v1/api/ui',
-        IMAGE_UPLOAD='/v1/api/business/images',
-        PRODUCTS='/v1/api/products'
+        AUTH='/v1/api/auth',
+
     ),
     logger=LoggerSettings(
         filename="app",
@@ -64,14 +54,6 @@ settings = Settings(
         rotation="5MB",
         serialize=False,
         format="{time} {level} {message}"
-    ),
-    jwt_tokens=AuthXConfig(
-        JWT_SECRET_KEY='SECRET_KEY',
-        JWT_TOKEN_LOCATION=['cookies'],
-        JWT_ACCESS_COOKIE_NAME='access_token',
-        JWT_REFRESH_COOKIE_NAME='refresh_token',
-        JWT_ACCESS_TOKEN_EXPIRES=timedelta(minutes=30),
-        JWT_REFRESH_TOKEN_EXPIRES=timedelta(days=30),
     ),
 )
 

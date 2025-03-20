@@ -13,7 +13,6 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    login = Column(String(25), unique=True, nullable=False)
     email = Column(String(50), unique=True, nullable=False)
     hashed_password = Column(String(500), nullable=False)
     role = Column(String(10), nullable=False)
@@ -22,7 +21,6 @@ class User(Base):
 class Business(Base):
     __tablename__ = 'businesses'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    login = Column(String(25), unique=True, nullable=False)
     hashed_password = Column(String(500), nullable=False)
     email = Column(String(50), nullable=False)
     is_deleted = Column(Boolean, nullable=False)
