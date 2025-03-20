@@ -1,9 +1,11 @@
 from typing import AsyncGenerator
+from loguru import logger
 from sqlalchemy.ext.asyncio import (create_async_engine, AsyncEngine,
                                     async_sessionmaker, AsyncSession)
-from ..config import settings
-from loguru import logger
-from .tables import Base
+
+from global_config import settings
+from db_core.tables import *
+
 
 
 class DatabaseHelper:
@@ -35,10 +37,6 @@ class DatabaseHelper:
         async with self.session_factory() as session:
             yield session
 
-    @logger.catch
-    async def init_db(self) -> None:
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
 
 
 db_helper = DatabaseHelper(
