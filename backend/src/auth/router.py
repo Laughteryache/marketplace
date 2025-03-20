@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db_core.helper import db_helper
 from global_config import settings
 
-from auth.models import SignUpScheme, SignInScheme, TokenInfoScheme
-from auth.db import BusinessDB, UsersDB
-from auth.utils import JWTAuth
+from .models import SignUpScheme, SignInScheme, TokenInfoScheme
+from .db import BusinessDB, UsersDB
+from .utils import JWTAuth
 
 router = APIRouter(
     prefix=settings.prefix.AUTH,

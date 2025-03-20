@@ -37,3 +37,8 @@ class ProductGetScheme(BaseModel):
     end_date: str | None = None
     quanity: int
     creator_id: int
+
+class CategoryModel(BaseModel):
+    category_id: int
+    name: str
+    description: str

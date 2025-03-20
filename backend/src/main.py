@@ -2,16 +2,16 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from db_core.helper import db_helper
 from global_config import settings
 
 from auth.router import router as auth_router
+from products.router import router as product_router
 
 from loguru import logger  # In the future, logging will occur on hosting instead of a log file # ElasticSearch in progress!
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 import time
-import asyncio
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -43,6 +43,7 @@ main_app.add_middleware(
 )
 
 main_app.include_router(auth_router)
+main_app.include_router(product_router)
 
 @main_app.get("/v1/api/ping")
 async def get_ping():

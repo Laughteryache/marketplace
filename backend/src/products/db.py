@@ -1,3 +1,15 @@
+from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text, select
+from typing import List
+
+import datetime
+
+from .models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
+from db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category
+
+
+
 class BusinessDB:
 
     @staticmethod
@@ -51,11 +63,49 @@ class BusinessDB:
                 product_id=product_id,
                 description=creds.description,
                 sex=creds.sex,
-                adult_only=creds.adult_only))
+                adult_only=creds.adult_only)
+        )
+
         session.add_all(registration_data)
         await session.commit()
         return product_id
 
+    @staticmethod
+    @logger.catch
+    async def get_categories_ids(session: AsyncSession) -> Category:
+        result = await session.execute(select(Category.id).order_by(Category.id))
+        return result.scalars().all()
+
+    @staticmethod
+    @logger.catch
+    async def get_categories(
+            session: AsyncSession,
+            id: int | None = None,
+    ) -> CategoryModel | List[CategoryModel]:
+        if id:
+            result = await session.execute(select(Category).where(Category.id == id))
+            category = result.scalar()
+            if not category:
+                return None
+            if category.is_deleted is True:
+                return None
+            return CategoryModel(
+                category_id=category.id,
+                name=category.name,
+                description=category.description)
+        else:
+            result = await session.execute(select(Category).order_by(Category.id))
+            categories = result.scalars().all()
+            categories_list = []
+            for category in categories:
+                if category.is_deleted is True:
+                    continue
+                categories_list.append(
+                    CategoryModel(
+                    category_id=category.id,
+                    name=category.name,
+                    description=category.description))
+            return categories_list
 
     @staticmethod
     @logger.catch

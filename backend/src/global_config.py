@@ -11,6 +11,7 @@ class DatabaseSettings(BaseSettings):
 
 class RoutersPrefix(BaseSettings):
     AUTH: str
+    PRODUCTS: str
 
 
 class LoggerSettings(BaseSettings):
@@ -44,6 +45,7 @@ settings = Settings(
     ),
     prefix=RoutersPrefix(
         AUTH='/v1/api/auth',
+        PRODUCTS='/v1/api/products',
 
     ),
     logger=LoggerSettings(
