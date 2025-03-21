@@ -63,3 +63,23 @@ async def get_all_categories(
     if not category:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Category not found')
     return category
+
+
+@router.get('/search', response_model=List[ProductGetScheme])
+async def search_business_product(
+    name: str,
+    start_id: int | None = None,
+    session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if start_id:
+        products = await BusinessDB.search_product(name=name,
+                                                   start_id=start_id,
+                                                   session=session)
+    else:
+        products = await BusinessDB.search_product(name=name,
+                                                   start_id=1,
+                                                   session=session)
+    if not products:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Product not found')
+    return products
