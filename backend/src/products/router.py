@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status, Cookie, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing_extensions import List
 
 from db_core.helper import db_helper
-from typing_extensions import List
+from cloud.file_uploader import delete_file, get_new_avatar_id
 
 from .db import BusinessDB
 from .models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
 
-from global_dependencies import get_payload_by_access_token, TokenPayloadModel
+from global_dependencies import get_payload_by_access_token, TokenPayloadModel, check_uploaded_file
 from global_config import settings
 
 
@@ -83,3 +84,57 @@ async def search_business_product(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Product not found')
     return products
+
+@router.get('/image')
+async def get_product_image(
+        product_id: int,
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    product = await BusinessDB.get_product(id=product_id, session=session)
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Product not found')
+    if not product.logo_path:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Product image not found'
+        )
+    return {"file_link": f"https://drive.google.com/file/d/{product.logo_path}/preview"}
+@router.put('/image')
+async def upload_business_product_image(
+        product_id: int,
+        session: AsyncSession = Depends(db_helper.get_async_session),
+        token_payload: TokenPayloadModel = Depends(get_payload_by_access_token),
+        picture_name: UploadFile = Depends(check_uploaded_file)
+) -> JSONResponse:
+    if token_payload.role != 'business':
+        await delete_file(picture_name)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Only for Business')
+
+    product_data = await BusinessDB.get_product(id=product_id, session=session)
+
+    if not product_data:
+        await delete_file(picture_name)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Product not found')
+
+    if int(product_data.creator_id) != int(token_payload.uid):
+        await delete_file(picture_name)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="It's not your product")
+    file_id = await get_new_avatar_id(picture_name)
+    await BusinessDB.save_product_image_id(
+        product_id=product_id,
+        session=session,
+        file_id=file_id)
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={
+            "file_link": f"https://drive.google.com/file/d/{file_id}/preview"
+        }
+    )

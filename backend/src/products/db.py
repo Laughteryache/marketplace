@@ -2,7 +2,7 @@ import time
 
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text, select
+from sqlalchemy import text, select, update
 from typing import List
 
 import datetime
@@ -215,3 +215,15 @@ class BusinessDB:
                 if cur_product_data:
                     product_get_list.append(cur_product_data)
         return product_get_list
+
+
+    async def save_product_image_id(
+            session: AsyncSession,
+            file_id: str,
+            product_id: int,
+    ) -> None:
+        await session.execute(
+            update(ProductData)
+            .where(ProductData.product_id == product_id)
+            .values(logo_path=file_id))
+        await session.commit()

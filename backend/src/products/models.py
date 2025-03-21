@@ -9,7 +9,7 @@ class BusinessUploadProductScheme(BaseModel):
     name: str = Field(min_length=5, max_length=50)
     description: str = Field(min_length=10, max_length=500)
     category_id: int
-    price: int
+    price: int = Field(ge=1)
     sex: str
     adult_only: bool
     start_date: datetime.date # The start date of the product availability in YYYY-MM-DD format.

@@ -13,7 +13,7 @@ from loguru import logger
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
 PERMISSION_URL = "https://www.googleapis.com/drive/v3/files/{}/permissions"
-UPLOAD_DIR = "src/uploaded_files"
+UPLOAD_DIR = "uploaded_files"
 
 async def random_file_name() -> str:
     return ''.join(random.choices(string.ascii_letters, k=50))

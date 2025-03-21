@@ -5,10 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from global_dependencies import TokenPayloadModel, get_payload_by_access_token
 from global_config import settings
 
-from cloud.file_uploader import get_new_avatar_id
+from cloud.file_uploader import get_new_avatar_id, delete_file
 from db_core.helper import db_helper
 
-from .dependencies import check_uploaded_file
+from global_dependencies import check_uploaded_file
 from .db import BusinessDB
 from .models import BusinessProfileScheme, ProfileInfo
 from .utils import convert_to_ekb_time
@@ -24,9 +24,8 @@ async def upload_business_image(
         session: AsyncSession = Depends(db_helper.get_async_session),
         picture_name: UploadFile = Depends(check_uploaded_file)
 ) -> JSONResponse:
-    if not token_payload:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,)
     if token_payload.role != 'business':
+        await delete_file(picture_name)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail='Only for Business')
