@@ -1,3 +1,5 @@
+import time
+
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select
@@ -7,7 +9,6 @@ import datetime
 
 from .models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
 from db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category
-
 
 
 class BusinessDB:
@@ -102,9 +103,9 @@ class BusinessDB:
                     continue
                 categories_list.append(
                     CategoryModel(
-                    category_id=category.id,
-                    name=category.name,
-                    description=category.description))
+                        category_id=category.id,
+                        name=category.name,
+                        description=category.description))
             return categories_list
 
     @staticmethod
@@ -121,16 +122,25 @@ class BusinessDB:
         product = product_result.scalar()
         product_data = product_data_result.scalar()
         product_quanity = product_quanity.scalar()
+        if product_quanity:
+            if product_quanity == 0:
+                return None
         product_date = product_date_result.scalar()
         if not product:
             return None
         if product.is_deleted is True:
             return None
         start_date = product_date.start_date.date()
+
         if product_date.end_date:
+            if datetime.datetime.fromtimestamp(time.time()) >= product_date.end_date:
+                return None
+            if product_date.start_date > product_date.end_date:
+                return None
             end_date = product_date.end_date.date()
         else:
             end_date = None
+
 
         if product_data.logo_path:
             return ProductGetScheme(
@@ -158,3 +168,50 @@ class BusinessDB:
             end_date=str(end_date),
             quanity=product_quanity.quanity,
             creator_id=product.creator_id)
+
+    @staticmethod
+    @logger.catch
+    async def search_product(
+            session: AsyncSession,
+            name: str,
+            start_id: int
+    ) -> ProductGetScheme | List[ProductGetScheme]:
+        name = name.lstrip().rstrip()
+        limit = 30
+        semi_product_data = None
+        result = await session.execute(
+            select(Product)
+            .order_by(Product.id.asc())
+            .limit(limit)
+            .where(Product.name.ilike(f"%{name}%"), Product.id >= start_id))
+        product_data = result.scalars().all()
+        if not product_data:
+            result = await session.execute(
+                select(Product)
+                .order_by(Product.id.asc())
+                .limit(limit)
+                .where(Product.name.ilike(f"%{name.replace(' ', '%')}%"), Product.id >= start_id))
+            product_data = result.scalars().all()
+
+        elif len(product_data) < limit:
+            limit = limit - len(product_data)
+            result = await session.execute(
+                select(Product)
+                .order_by(Product.id.asc())
+                .limit(limit)
+                .where(Product.name.ilike(f"%{name.replace(' ', '%')}%"), Product.id > product_data[-1].id))
+            semi_product_data = result.scalars().all()
+        if not product_data and not semi_product_data:
+            return None
+        product_get_list = []
+        if product_data:
+            for product in product_data:
+                cur_product_data = await BusinessDB.get_product(id=product.id, session=session)
+                if cur_product_data:
+                    product_get_list.append(cur_product_data)
+        if semi_product_data:
+            for product in semi_product_data:
+                cur_product_data = await BusinessDB.get_product(id=product.id, session=session)
+                if cur_product_data:
+                    product_get_list.append(cur_product_data)
+        return product_get_list
