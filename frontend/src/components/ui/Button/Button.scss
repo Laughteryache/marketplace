@@ -1,0 +1,53 @@
+.button {
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  min-height: 57px;
+  min-width: 275px;
+  padding: variables.$space-s variables.$space-l;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+
+  &_disabled {
+    background-color: variables.$color-grey;
+  }
+
+  &_size {
+    &_small {
+      width: 150px;
+      height: 100px;
+    }
+    &_medium {
+      width: 275px;
+      height: 50px;
+    }
+    &_large {
+      width: 300px;
+      height: 100px;
+    }
+  }
+
+  &_color {
+    &_blue {
+      border-color: variables.$primary-color;
+      background-color: variables.$primary-color;
+      &:hover {
+        background-color: variables.$secondary-color;
+      }
+    }
+    &_white {
+      border-color: variables.$primary-color;
+      background-color: variables.$color-white;
+      &:hover {
+        background-color: variables.$color-grey;
+      }
+    }
+  }
+}
+
+.button:disabled {
+  pointer-events: none;
+  cursor: default;
+}

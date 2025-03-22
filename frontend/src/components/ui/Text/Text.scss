@@ -1,0 +1,40 @@
+.text {
+  &_color {
+    &_black {
+      color: variables.$color-black;
+    }
+    &_white {
+      color: variables.$color-white;
+    }
+    &_blue {
+      color: variables.$primary-color;
+    }
+    &_red {
+      color: variables.$color-red;
+    }
+  }
+  &_view {
+    &_button {
+      font-size: 20px;
+      line-height: 20px;
+    }
+    &_title {
+      font-size: 36px;
+    }
+
+    &_label {
+      font-size: 28px;
+    }
+  }
+  &_weight {
+    &_normal {
+      font-weight: 400;
+    }
+    &_medium {
+      font-weight: 500;
+    }
+    &_bold {
+      font-weight: 700;
+    }
+  }
+}
