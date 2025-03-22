@@ -45,6 +45,9 @@ jobs:
         run: |
           git clone https://github.com/laughteryache/marketplace.git -b dev
 
+      - name: Создание таблиц
+        run: |
+          psql -h localhost -p 5432 -U postgres -d postgres -f /marketplace/backend/sql/tables.sql
 
       - name: Установка зависимостей
         run: |
