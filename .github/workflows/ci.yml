@@ -54,7 +54,7 @@ jobs:
 
       - name: Запуск приложения
         run: |
-          cd marketplace/backend
+          cd marketplace/backend/src
           python main.py &  # Запускаем в фоне
           sleep 5  # Ждем, пока сервер поднимется
         env:
