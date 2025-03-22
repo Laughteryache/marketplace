@@ -7,8 +7,8 @@ from .boys import alex_data, john_data, steve_data, luca_data
 IP_ADDRESS = settings.IP_ADDRESS
 SERVER_PORT = settings.SERVER_PORT
 
-sign_up = f"http://{IP_ADDRESS}:{SERVER_PORT}/v1/api/auth/business/sign-up"
-sign_in = f"http://{IP_ADDRESS}:{SERVER_PORT}/v1/api/auth/business/sign-in"
+sign_up = f"http://{IP_ADDRESS}:{SERVER_PORT}/v1/api/auth/user/sign-up"
+sign_in = f"http://{IP_ADDRESS}:{SERVER_PORT}/v1/api/auth/user/sign-in"
 
 @pytest.mark.asyncio
 async def test_alex_sign_up():
@@ -87,4 +87,3 @@ async def test_luca_sign_in():
     async with AsyncClient() as client:
         response = await client.post(url=sign_in, json=luca_data)
     assert response.status_code == 422
-

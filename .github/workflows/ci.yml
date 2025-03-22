@@ -69,7 +69,6 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
         run: |
           cd marketplace/backend
-          pip install pytest httpx
           pytest
 
       - name: Остановка сервера
