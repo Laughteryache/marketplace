@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient
 from global_config import settings
 
-from .boys import alex_data, john_data, steve_data, luca_data
+from .testers import alex_data, john_data, steve_data, luca_data
 
 IP_ADDRESS = settings.IP_ADDRESS
 SERVER_PORT = settings.SERVER_PORT
