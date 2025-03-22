@@ -47,7 +47,8 @@ jobs:
 
       - name: Создание таблиц
         run: |
-          psql postgresql://postgres:postgres@localhost:5432/postgres -f /marketplace/backend/sql/tables.sql
+          cd marketplace/backend/sql
+          psql postgresql://postgres:postgres@localhost:5432/postgres -f tables.sql
 
       - name: Установка зависимостей
         run: |
