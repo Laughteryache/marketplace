@@ -1,0 +1,66 @@
+name: CI for FastAPI (dev branch)
+
+on:
+  push:
+    branches:
+      - dev # Запуск на ветке dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+      image: postgres:15
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
+      ports:
+        - 5432:5432
+      options: >-
+        --health-cmd "pg_isready -U postgres -d postgres"
+        --health-interval 5s
+        --health-timeout 5s
+        --health-retries 5
+        
+
+  steps:
+    - name: Проверка API
+      uses: actions/checkout@v4
+
+    - name: Установка Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.13"
+
+    - name: Настройка кеша pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('marketplace/backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Установка зависимостей
+        run: |
+          cd marketplace/backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Запуск приложения
+        run: |
+          cd marketplace/backend
+          python main.py
+          sleep 5
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+
+
+      - name: Запуск тестов
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+        run: |
+          cd marketplace/backend
+          pip install pytest httpx
+          pytest
