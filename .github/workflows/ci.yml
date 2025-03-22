@@ -69,7 +69,7 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
         run: |
           cd marketplace/backend
-          pytest
+          pytest --disable-warnings --maxfail=1
 
       - name: Остановка сервера
         run: |
