@@ -1,19 +1,12 @@
-from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-
-from typing import List
-import datetime
-
-
+from sqlalchemy import select, text
+from datetime import datetime
 from loguru import logger
 
-from ..config import settings
-from .helper import db_helper
-from .tables import *
-from ..schemes import SignUpScheme, SignInScheme
-from services.security import HashSecurity
-
+from .models import SignUpScheme, SignInScheme
+from .utils import HashSecurity
+from db_core.tables import (User, UsersBalance, UsersCart, UsersProfile,
+                                Business, BusinessFinance, BusinessProfile)
 
 class BusinessDB:
 
@@ -36,21 +29,22 @@ class BusinessDB:
             session: AsyncSession,
             creds: SignUpScheme
     ) -> str:
+
         hashed_password = await HashSecurity.get_hash(creds.password)
-        registration_data = [
-            Business(
-                login=creds.login,
-                email=creds.email,
-                hashed_password=hashed_password,
-                is_deleted=False),
-        ]
-        session.add_all(registration_data)
+
+        query = text("""
+            INSERT INTO businesses (email, hashed_password, is_deleted)
+            VALUES ( :email, :hashed_password, FALSE)
+            RETURNING id;""")
+
+        result = await session.execute(query, {
+            "email": creds.email,
+            "hashed_password": hashed_password
+        })
         await session.commit()
-        await session.refresh(registration_data[0])
-        result = await session.execute(
-            select(Business.id)
-            .where(Business.email==creds.email))
+
         business_id = result.scalar()
+
         registration_data = [
             BusinessFinance(
                 business_id=business_id,
@@ -59,9 +53,12 @@ class BusinessDB:
                 earnings=0),
             BusinessProfile(
                 business_id=business_id,
+                title='',
+                description='',
                 location='Чайковский',
-                date_joined=datetime.datetime.utcnow())
+                date_joined=datetime.utcnow())
         ]
+
         session.add_all(registration_data)
         await session.commit()
         return business_id
@@ -92,25 +89,13 @@ class BusinessDB:
     @staticmethod
     @logger.catch
     async def get_data_by_id(
-            user_id: str,
+            business_id: id,
             session: AsyncSession
     ) -> Business:
         result = await session.execute(
             select(Business)
-            .where(Business.id==int(user_id)))
+            .where(Business.id==int(business_id)))
         return result.scalar()
-
-    @staticmethod
-    @logger.catch
-    async def get_balance(
-            business_id: str,
-            session: AsyncSession
-    ) -> int:
-        result = await session.execute(
-            select(BusinessFinance.balance)
-            .where(BusinessFinance.business_id==int(business_id)))
-        return int(result.scalar())
-
 
 
 class UsersDB:
@@ -121,13 +106,10 @@ class UsersDB:
             session: AsyncSession,
             creds: SignUpScheme
     ) -> bool:
-        email_result = await session.execute(
+        result = await session.execute(
             select(User)
             .where(User.email==creds.email))
-        login_result = await session.execute(
-            select(User)
-            .where(User.login==creds.login))
-        if email_result.scalar() or login_result.scalar():
+        if result.scalar():
             return False
         return True
 
@@ -136,22 +118,20 @@ class UsersDB:
     async def register(
             session: AsyncSession,
             creds: SignUpScheme
-    ) -> str | None:
+    ) -> str:
         hashed_password = await HashSecurity.get_hash(creds.password)
-        registration_data = [
-            User(
-            login=creds.login,
-            email=creds.email,
-            hashed_password=hashed_password,
-            role='user',
-            is_deleted=False),
-        ]
-        session.add_all(registration_data)
+
+        query = text("""
+            INSERT INTO users (email, hashed_password, role, is_deleted)
+            VALUES (:email, :hashed_password, :role, FALSE)
+            RETURNING id;""")
+        result = await session.execute(query, {
+            "email": creds.email,
+            "hashed_password": hashed_password,
+            "role": 'user'
+        })
+
         await session.commit()
-        await session.refresh(registration_data[0])
-        result = await session.execute(
-            select(User.id)
-            .where(User.email==creds.email))
         user_id = result.scalar()
 
         registration_data = [
@@ -163,8 +143,8 @@ class UsersDB:
                 shopping_cart=[]),
             UsersProfile(
                 user_id=user_id,
-                last_login=datetime.datetime.now(),
-                date_joined=datetime.datetime.utcnow(),
+                last_login=datetime.utcnow(),
+                date_joined=datetime.utcnow(),
                 location='Чайковский')
         ]
         session.add_all(registration_data)
@@ -195,25 +175,3 @@ class UsersDB:
             .where(User.email==creds.email)
         )
         return result.scalar()
-
-    @staticmethod
-    @logger.catch
-    async def get_data_by_id(
-            user_id: str,
-            session: AsyncSession
-    ) -> User:
-        result = await session.execute(
-            select(User)
-            .where(User.id==int(user_id)))
-        return result.scalar()
-
-    @staticmethod
-    @logger.catch
-    async def get_balance(
-            user_id: str,
-            session: AsyncSession
-    ) -> int:
-        result = await session.execute(
-            select(UsersBalance.balance)
-            .where(UsersBalance.user_id==int(user_id)))
-        return int(result.scalar())

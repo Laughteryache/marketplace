@@ -21,4 +21,3 @@ google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.1
 google-api-python-client==2.164.0
 googleapis-common-protos==1.69.1
->>>>>>> frontend-dev

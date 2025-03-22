@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" bigserial NOT NULL UNIQUE,
-	"login" varchar(25) NOT NULL UNIQUE,
 	"email" varchar(50) NOT NULL UNIQUE,
 	"hashed_password" varchar(500) NOT NULL,
 	"role" varchar(10) NOT NULL,
@@ -10,9 +9,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 
 CREATE TABLE IF NOT EXISTS "businesses" (
 	"id" bigserial NOT NULL UNIQUE,
-	"login" varchar(25) NOT NULL UNIQUE,
-	"hashed_password" varchar(500) NOT NULL,
 	"email" varchar(50) NOT NULL UNIQUE,
+	"hashed_password" varchar(500) NOT NULL,
 	"is_deleted" boolean NOT NULL,
 	PRIMARY KEY ("id")
 );
@@ -94,7 +92,7 @@ CREATE TABLE IF NOT EXISTS "business_profile" (
 	"business_id" bigserial NOT NULL UNIQUE,
 	"title" varchar(50),
 	"description" varchar(500),
-	"logo_path" varchar(255),
+	"logo_id" varchar(255),
 	"location" varchar(90),
 	"date_joined" timestamp NOT NULL,
 	PRIMARY KEY ("business_id")
@@ -103,7 +101,7 @@ CREATE TABLE IF NOT EXISTS "business_profile" (
 CREATE TABLE IF NOT EXISTS "product_data" (
 	"product_id" bigint NOT NULL UNIQUE,
 	"description" varchar(500) NOT NULL,
-	"logo_path" varchar(255) NOT NULL,
+	"logo_path" varchar(255),
 	"sex" varchar(15) NOT NULL,
 	"adult_only" boolean NOT NULL,
 	PRIMARY KEY ("product_id")
@@ -195,3 +193,6 @@ ALTER TABLE "reviews_data" ADD CONSTRAINT "reviews_data_fk0" FOREIGN KEY ("id") 
 ALTER TABLE "order_date" ADD CONSTRAINT "order_date_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id");
 ALTER TABLE "order_price" ADD CONSTRAINT "order_price_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id");
 ALTER TABLE "order_cart" ADD CONSTRAINT "order_cart_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id");
+
+INSERT INTO categories (id, name, description, is_deleted)
+VALUES (1, 'all', 'All goods!', False)

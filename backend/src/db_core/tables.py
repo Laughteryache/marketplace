@@ -1,5 +1,6 @@
 from sqlalchemy import (Column, Integer, String, BigInteger,
                         Boolean, SmallInteger, TIMESTAMP, ForeignKey, ARRAY)
+
 from sqlalchemy.orm import relationship, DeclarativeBase, declared_attr
 from sqlalchemy import MetaData
 
@@ -12,7 +13,6 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    login = Column(String(25), unique=True, nullable=False)
     email = Column(String(50), unique=True, nullable=False)
     hashed_password = Column(String(500), nullable=False)
     role = Column(String(10), nullable=False)
@@ -21,7 +21,6 @@ class User(Base):
 class Business(Base):
     __tablename__ = 'businesses'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    login = Column(String(25), unique=True, nullable=False)
     hashed_password = Column(String(500), nullable=False)
     email = Column(String(50), nullable=False)
     is_deleted = Column(Boolean, nullable=False)
@@ -95,7 +94,7 @@ class BusinessProfile(Base):
     business_id = Column(BigInteger, primary_key=True)
     title = Column(String(50), nullable=False)
     description = Column(String(500), nullable=False)
-    logo_path = Column(String(255))
+    logo_id = Column(String(255))
     location = Column(String(90), nullable=False)
     date_joined = Column(TIMESTAMP, nullable=False)
 
@@ -110,7 +109,7 @@ class ProductData(Base):
 class ProductQuantity(Base):
     __tablename__ = 'product_quanity'
     product_id = Column(BigInteger, primary_key=True)
-    quantity = Column(BigInteger)
+    quanity = Column(BigInteger)
 
 class PromocodeDiscount(Base):
     __tablename__ = 'promocode_discount'

@@ -1,11 +1,11 @@
 import re
-
+import datetime
 from fastapi import HTTPException, status
 from pydantic import BaseModel, EmailStr, field_validator, Field
 
 
+
 class SignUpScheme(BaseModel):
-    login: str = Field(min_length=4,max_length=25)
     email: EmailStr
     password: str = Field(max_length=40)
 
@@ -25,11 +25,7 @@ class SignInScheme(BaseModel):
     email: EmailStr
     password: str = Field(max_length=40)
 
-
-class TokenInfo(BaseModel):
+class TokenInfoScheme(BaseModel):
     access_token: str
     refresh_token: str | None = None
 
-class TokenPayloadModel(BaseModel):
-    role: str
-    uid: str
