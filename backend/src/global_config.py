@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 from time import time
 from loguru import logger
 from datetime import timedelta
+import os
 
 
 class DatabaseSettings(BaseSettings):
@@ -40,7 +41,7 @@ settings = Settings(
     SERVER_PORT=8765,
     IP_ADDRESS='127.0.0.1',
     db=DatabaseSettings(
-        DATABASE_URL='postgresql+asyncpg://postgres:Lolipop!2009@localhost:5432/postgres',
+        DATABASE_URL=os.getenv('DATABASE_URL','postgresql+asyncpg://postgres:Lolipop!2009@localhost:5432/postgres'),
         POOL_SIZE=500,
         MAX_OVERFLOW=100
     ),
