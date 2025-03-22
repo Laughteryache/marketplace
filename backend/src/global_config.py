@@ -40,7 +40,7 @@ settings = Settings(
     SERVER_PORT=8765,
     IP_ADDRESS='127.0.0.1',
     db=DatabaseSettings(
-        DATABASE_URL='postgresql+asyncpg://postgres:Lolipop!2009@localhost:5432/postgres',
+        DATABASE_URL='postgresql+asyncpg://postgres:D64VWo@localhost:5432/marketplace',
         POOL_SIZE=500,
         MAX_OVERFLOW=100
     ),

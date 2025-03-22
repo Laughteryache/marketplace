@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import "./App.css";
-
-function App() {
-  return <div></div>;
-}
-=======
 import Header from "@components/Header";
 import Modal from "@components/Modal";
 import { ping } from "@src/api";
@@ -28,11 +21,9 @@ const App = () => {
   return (
     <>
       <Header></Header>
-      <Modal />
       <h1>{data ? data : "Загрузка..."}</h1>
     </>
   );
 };
->>>>>>> frontend-dev
 
 export default App;
