@@ -5,7 +5,7 @@ import Heart from "@assets/heart.svg?react";
 import Box from "@assets/box.svg?react";
 import Text from "@ui/Text";
 import MenuButton from "@ui/MenuButton";
-import Modal from "@ui/Modal";
+import Modal from "@components/Modal";
 
 import "./HeaderTop.scss";
 

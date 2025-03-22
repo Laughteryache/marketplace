@@ -1,13 +1,12 @@
 .button {
   border-radius: 10px;
-  background-color: variables.$primary-color;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: none;
   min-height: 57px;
   min-width: 275px;
   padding: variables.$space-s variables.$space-l;
-  border: none;
   transition: background-color 0.3s ease;
   cursor: pointer;
 
@@ -29,10 +28,23 @@
       height: 100px;
     }
   }
-}
 
-.button:hover {
-  background-color: variables.$secondary-color;
+  &_color {
+    &_blue {
+      border-color: variables.$primary-color;
+      background-color: variables.$primary-color;
+      &:hover {
+        background-color: variables.$secondary-color;
+      }
+    }
+    &_white {
+      border-color: variables.$primary-color;
+      background-color: variables.$color-white;
+      &:hover {
+        background-color: variables.$color-grey;
+      }
+    }
+  }
 }
 
 .button:disabled {

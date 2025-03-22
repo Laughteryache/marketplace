@@ -1,9 +1,8 @@
 import { useActionState } from "react";
 
 import Input from "@ui/Input";
-import Text from "@ui/Text";
 import Button from "@ui/Button";
-import { registerUser } from "@src/api";
+import { userService } from "@src/api";
 import "./AuthForm.scss";
 
 const AuthForm = () => {
@@ -17,7 +16,7 @@ const AuthForm = () => {
     const password = formData.get("password");
 
     try {
-      const response = await registerUser({ email, password });
+      const response = await userService.registerUser({ email, password });
       return { data: response, error: null };
     } catch (e) {
       return { ...prevState, error: e.message };
@@ -42,9 +41,14 @@ const AuthForm = () => {
           id="password"
         ></Input>
       </div>
-      <Button type="submit" size="medium">
-        Войти
-      </Button>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <Button type="submit" size="medium">
+          Войти
+        </Button>
+        <Button type="submit" size="medium" color="white">
+          Зарегистрироваться
+        </Button>
+      </div>
       {state.data && <p>{state.data.email} registered</p>}
       {state.error && <p>{state.error}</p>}
     </form>

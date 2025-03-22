@@ -15,6 +15,8 @@ const Input = ({ label, type, placeholder, name, id, className, ...props }) => {
         className={cn("input_form", className)}
         name={name}
         placeholder={placeholder}
+        onInvalid={(e) => e.preventDefault()}
+        {...props}
       ></input>
     </div>
   );

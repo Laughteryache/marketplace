@@ -9,6 +9,7 @@ const Button = ({
   children,
   view = "normal",
   size = "medium",
+  color = "blue",
   loading = false,
   disabled = false,
   ...props
@@ -19,7 +20,8 @@ const Button = ({
         className,
         "button",
         disabled && "button_disabled",
-        size && `button_size_${size}`
+        `button_size_${size}`,
+        `button_color_${color}`
       )}
       disabled={disabled || loading}
       {...props}
@@ -29,7 +31,12 @@ const Button = ({
           Загрузка...
         </Text>
       )}
-      <Text tag="span" view="button" color="white" weight="normal">
+      <Text
+        tag="span"
+        view="button"
+        color={color === "blue" ? "white" : "blue"}
+        weight="normal"
+      >
         {children}
       </Text>
     </button>
