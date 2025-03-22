@@ -9,7 +9,7 @@ from cloud.file_uploader import get_new_avatar_id, delete_file
 from db_core.helper import db_helper
 
 from global_dependencies import check_uploaded_file
-from .db import BusinessDB
+from .db import BusinessDB, UsersDB
 from .models import BusinessProfileScheme, ProfileInfo
 from .utils import convert_to_ekb_time
 
