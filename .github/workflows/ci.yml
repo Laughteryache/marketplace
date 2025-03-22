@@ -35,32 +35,32 @@ jobs:
         python-version: "3.13"
 
     - name: Настройка кеша pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('marketplace/backend/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('marketplace/backend/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-      - name: Установка зависимостей
-        run: |
-          cd marketplace/backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Установка зависимостей
+      run: |
+        cd marketplace/backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Запуск приложения
-        run: |
-          cd marketplace/backend
-          python main.py
-          sleep 5
-        env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+    - name: Запуск приложения
+      run: |
+        cd marketplace/backend
+        python main.py
+        sleep 5
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 
 
-      - name: Запуск тестов
-        env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
-        run: |
-          cd marketplace/backend
-          pip install pytest httpx
-          pytest
+    - name: Запуск тестов
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+      run: |
+        cd marketplace/backend
+        pip install pytest httpx
+        pytest
