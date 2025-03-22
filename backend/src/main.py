@@ -47,7 +47,7 @@ main_app.include_router(auth_router)
 main_app.include_router(product_router)
 main_app.include_router(profile_router)
 
-@main_app.get("/v1/api/ping")
+@main_app.get("/ping")
 async def get_ping():
     return {"uptime": int(time.time()-settings.SERVER_START_TIME)}
 
