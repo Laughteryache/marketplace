@@ -175,3 +175,14 @@ class UsersDB:
             .where(User.email==creds.email)
         )
         return result.scalar()
+
+    @staticmethod
+    @logger.catch
+    async def get_data_by_id(
+            user_id: id,
+            session: AsyncSession
+    ) -> Business:
+        result = await session.execute(
+            select(User)
+            .where(User.id == int(user_id)))
+        return result.scalar()

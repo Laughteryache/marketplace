@@ -123,11 +123,13 @@ async def refresh_access_token(
         try:
             user_data = await UsersDB.get_data_by_id(user_id = uid, session=session)
         except:
+            print(1)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User account not founded."
             )
         if not user_data or user_data.is_deleted is True:
+            print(2)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User account not founded.")
@@ -135,6 +137,7 @@ async def refresh_access_token(
         try:
             user_data = await BusinessDB.get_data_by_id(business_id = uid, session=session)
         except:
+            print(3)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Business account not founded."

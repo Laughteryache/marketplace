@@ -18,6 +18,10 @@ async def test_olivia_business_balance():
     assert 'access_token' in response.json().keys()
     assert 'refresh_token' in response.json().keys()
     access_token = response.json()['access_token']
+    async with AsyncClient() as client:
+        response = await client.get(url=balance, cookies={'token': access_token})
+        assert response.status_code == 401
+
 
     async with AsyncClient() as client:
         response = await client.get(url=balance, cookies={'access_token': access_token})
@@ -32,6 +36,10 @@ async def test_olivia_user_balance():
     assert 'access_token' in response.json().keys()
     assert 'refresh_token' in response.json().keys()
     access_token = response.json()['access_token']
+
+    async with AsyncClient() as client:
+        response = await client.get(url=balance, cookies={'refresh_token': access_token})
+        assert response.status_code == 401
 
     async with AsyncClient() as client:
         response = await client.get(url=balance, cookies={'access_token': access_token})

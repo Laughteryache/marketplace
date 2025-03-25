@@ -20,15 +20,15 @@ olivia_data = {  # Good Boy
     'password': 'asdhjAs2Sfg2@',
 }
 
-
-
-
-
-
 mike_data = {  # Good Boy
     'email': 'mike@mikeville.com',
     'password': '$tr0ngmikeP@ssw0rd!',
 }
+
+
+
+
+
 
 emily_data = {  # Bad Password Boy
     'email': 'emily@emilysworld.com',
