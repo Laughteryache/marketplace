@@ -60,7 +60,7 @@ jobs:
         run: |
           cd marketplace/backend/src
           python main.py &  # Запускаем в фоне
-          sleep 5  # Ждем, пока сервер поднимется
+          sleep 2  # Ждем, пока сервер поднимется
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 
