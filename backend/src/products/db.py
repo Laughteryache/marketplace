@@ -8,7 +8,7 @@ from typing import List
 import datetime
 
 from .models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
-from db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category
+from db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category, Business
 
 
 class BusinessDB:
@@ -217,6 +217,8 @@ class BusinessDB:
         return product_get_list
 
 
+    @staticmethod
+    @logger.catch
     async def save_product_image_id(
             session: AsyncSession,
             file_id: str,
@@ -227,3 +229,33 @@ class BusinessDB:
             .where(ProductData.product_id == product_id)
             .values(logo_path=file_id))
         await session.commit()
+
+
+    @staticmethod
+    @logger.catch
+    async def get_business_products(
+            id: int,
+            session: AsyncSession
+    ) -> List[ProductGetScheme]:
+        business_result = await session.execute(
+            select(Business)
+            .where(Business.id == id)
+        )
+        if not business_result.scalar():
+            return None
+
+        products_result = await session.execute(
+            select(Product.id)
+            .where(Product.creator_id == id))
+        products_ids = products_result.scalars().all()
+
+        if not products_ids:
+            return None
+
+        products = []
+        for id in products_ids:
+            product = await BusinessDB.get_product(id=id, session=session)
+            if not product:
+                continue
+            products.append(product)
+        return products

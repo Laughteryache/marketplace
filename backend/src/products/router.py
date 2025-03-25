@@ -138,3 +138,15 @@ async def upload_business_product_image(
             "file_link": f"https://drive.google.com/file/d/{file_id}/preview"
         }
     )
+
+@router.get('/products/profile')
+async def get_all_business_products(
+        id: int,
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    products = await BusinessDB.get_business_products(id=id, session=session)
+    if not products:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='This Business haven\'t any products or not exist\'s')
+    return products
