@@ -24,8 +24,3 @@ class SignUpScheme(BaseModel):
 class SignInScheme(BaseModel):
     email: EmailStr
     password: str = Field(max_length=40)
-
-class TokenInfoScheme(BaseModel):
-    access_token: str
-    refresh_token: str | None = None
-

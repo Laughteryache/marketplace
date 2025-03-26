@@ -14,6 +14,7 @@ class RoutersPrefix(BaseSettings):
     AUTH: str
     PRODUCTS: str
     PROFILE: str
+    ORDER: str
 
 
 class LoggerSettings(BaseSettings):
@@ -48,7 +49,8 @@ settings = Settings(
     prefix=RoutersPrefix(
         AUTH='/v1/api/auth',
         PRODUCTS='/v1/api/products',
-        PROFILE='/v1/api/profile'
+        PROFILE='/v1/api/profile',
+        ORDER='/v1/api/order',
 
     ),
     logger=LoggerSettings(

@@ -2,13 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from global_dependencies import TokenPayloadModel, get_payload_by_access_token
+from global_dependencies import TokenPayloadModel, get_payload_by_access_token, check_uploaded_file
 from global_config import settings
 
 from cloud.file_uploader import get_new_avatar_id, delete_file
 from db_core.helper import db_helper
 
-from global_dependencies import check_uploaded_file
 from .db import BusinessDB, UsersDB
 from .models import BusinessProfileScheme, ProfileInfo
 from .utils import convert_to_ekb_time
