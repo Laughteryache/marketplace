@@ -33,7 +33,11 @@ async def business_sign_up(
     response.set_cookie("access_token", access_token, httponly=True)
     response.set_cookie("refresh_token", refresh_token, httponly=True)
 
-    return {"business_id": business_id}
+    return {
+            "business_id": business_id,
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
 
 
 @router.post('/business/sign-in')
@@ -57,7 +61,11 @@ async def business_sign_in(
     response.set_cookie("access_token", access_token, httponly=True)
     response.set_cookie("refresh_token", refresh_token, httponly=True)
 
-    return {"business_id": business_id}
+    return {
+            "business_id": business_id,
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
 
 
 @router.post('/user/sign-up')
@@ -77,7 +85,11 @@ async def user_sign_up(
     response.set_cookie("access_token", access_token, httponly=True)
     response.set_cookie("refresh_token", refresh_token, httponly=True)
 
-    return {'user_id': uid}
+    return {
+            'user_id': uid,
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
 
 @router.post('/user/sign-in')
 async def user_sign_in(
@@ -98,7 +110,11 @@ async def user_sign_in(
         response.set_cookie("access_token", access_token, httponly=True)
         response.set_cookie("refresh_token", refresh_token, httponly=True)
 
-        return {'user_id': uid}
+        return {
+                'user_id': uid,
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }
 
 @router.get("/refresh-token")
 async def refresh_access_token(
@@ -160,4 +176,4 @@ async def refresh_access_token(
 
     access_token = await JWTAuth.create_access(user_id=uid, token_for=token_owner)
     response.set_cookie("access_token", access_token, httponly=True)
-    return {'access_token': access_token}
+    return {'access_token': access_token }
