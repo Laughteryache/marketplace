@@ -33,3 +33,13 @@ async def get_user_cart(
             detail='Cart is empty or user doesn\'t exist')
     return user_cart
 
+@router.delete('/user/cart')
+async def delete_user_cart(
+        token_payload: TokenPayload = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if token_payload.role != 'user':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='Only users have shopping cart')
+    await UsersDB.drop_cart_items(session=session,user_id=token_payload.uid,)
+    return {'status': 'ok'}

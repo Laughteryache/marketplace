@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update, select
+from sqlalchemy import update, select, delete
 from db_core.tables import UsersCart
 
 from loguru import logger
@@ -34,3 +34,16 @@ class UsersDB:
                         product_data=product_data,
                         quantity=count))
         return serialized_cart
+
+    @staticmethod
+    @logger.catch
+    async def drop_cart_items(
+            session: AsyncSession,
+            user_id: int
+    ) -> None:
+        await session.execute(
+            update(UsersCart)
+            .values(shopping_cart=[])
+            .where(UsersCart.user_id==int(user_id))
+        )
+        await session.commit()

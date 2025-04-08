@@ -3,7 +3,9 @@ from time import time
 from loguru import logger
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class DatabaseSettings(BaseSettings):
     DATABASE_URL: str
@@ -39,12 +41,12 @@ class Settings(BaseSettings):
 
 settings = Settings(
     SERVER_START_TIME=int(time()),
-    SERVER_PORT=8765,
-    IP_ADDRESS='127.0.0.1',
+    SERVER_PORT=int(os.getenv("SERVER_PORT")),
+    IP_ADDRESS=os.getenv("IP_ADDRESS"),
     db=DatabaseSettings(
-        DATABASE_URL=os.getenv('DATABASE_URL','postgresql+asyncpg://postgres:Lolipop!2009@localhost:5432/postgres'),
-        POOL_SIZE=500,
-        MAX_OVERFLOW=100
+        DATABASE_URL=os.getenv('DB_URL'),
+        POOL_SIZE=int(os.getenv('POOL_SIZE')),
+        MAX_OVERFLOW=int(os.getenv('MAX_OVERFLOW')),
     ),
     prefix=RoutersPrefix(
         AUTH='/v1/api/auth',
