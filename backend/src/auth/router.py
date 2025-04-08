@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db_core.helper import db_helper
 from global_config import settings
+from global_dependencies import get_payload_by_access_token
 
 from .models import SignUpScheme, SignInScheme
 from .db import BusinessDB, UsersDB
@@ -116,6 +117,28 @@ async def user_sign_in(
                 'refresh_token': refresh_token
             }
 
+@router.get('/me')
+async def get_user_info(
+        token_payload: JWTAuth = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session),
+) -> JSONResponse:
+    if token_payload.role == 'user':
+        user_data = await UsersDB.get_data_by_id(user_id=token_payload.uid,
+                                                 session=session)
+    elif token_payload.role == 'business':
+        user_data = await BusinessDB.get_data_by_id(user_id=token_payload.uid,
+                                                    session=session)
+    if not user_data:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if user_data.is_deleted:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    return {
+        'id': user_data.id,
+        'role': user_data.role,
+        'email': user_data.email,
+    }
+
+
 @router.get("/refresh-token")
 async def refresh_access_token(
         response: Response,
@@ -146,13 +169,11 @@ async def refresh_access_token(
         try:
             user_data = await UsersDB.get_data_by_id(user_id = uid, session=session)
         except:
-            print(1)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User account not founded."
             )
         if not user_data or user_data.is_deleted is True:
-            print(2)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User account not founded.")
@@ -160,7 +181,6 @@ async def refresh_access_token(
         try:
             user_data = await BusinessDB.get_data_by_id(business_id = uid, session=session)
         except:
-            print(3)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Business account not founded."

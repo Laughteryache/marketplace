@@ -7,6 +7,7 @@ from global_config import settings
 from auth.router import router as auth_router
 from products.router import router as product_router
 from profile.router import router as profile_router
+from orders.router import router as order_router
 
 from loguru import logger  # In the future, logging will occur on hosting instead of a log file # ElasticSearch in progress!
 from contextlib import asynccontextmanager
@@ -29,6 +30,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             server_uptime = int(time.time() - settings.SERVER_START_TIME)
             logger.info(f"Server total uptime: {server_uptime} seconds")
 
+
         except Exception as dispose_error:
             logger.error(f"Error during cleanup: {dispose_error}")
 
@@ -46,6 +48,8 @@ main_app.add_middleware(
 main_app.include_router(auth_router)
 main_app.include_router(product_router)
 main_app.include_router(profile_router)
+main_app.include_router(order_router)
+
 
 @main_app.get("/ping")
 async def get_ping():

@@ -138,9 +138,7 @@ class UsersDB:
             UsersBalance(
                 user_id=user_id,
                 balance=0),
-            UsersCart(
-                user_id=user_id,
-                shopping_cart=[]),
+            UsersCart(user_id=user_id),
             UsersProfile(
                 user_id=user_id,
                 last_login=datetime.utcnow(),
@@ -181,7 +179,7 @@ class UsersDB:
     async def get_data_by_id(
             user_id: id,
             session: AsyncSession
-    ) -> Business:
+    ) -> User:
         result = await session.execute(
             select(User)
             .where(User.id == int(user_id)))

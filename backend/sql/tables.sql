@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS "users_profile" (
 
 CREATE TABLE IF NOT EXISTS "users_cart" (
 	"user_id" bigserial NOT NULL UNIQUE,
-	"shopping_cart" integer[] NOT NULL,
+	"shopping_cart" integer[],
 	PRIMARY KEY ("user_id")
 );
 
