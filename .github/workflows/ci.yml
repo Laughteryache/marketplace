@@ -57,13 +57,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Конфигурация переменных окружиения
-        env:
-          POOL_SIZE: 500
-          MAX_OVERFLOW: 100
-          SERVER_PORT: 8000
-          IP_ADDRESS: 127.0.0.1
-          JWT_SECRET_KEY: SECRET_KEY
-          DB_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+        run: |
+          export POOL_SIZE=500
+          export MAX_OVERFLOW=100
+          export SERVER_PORT=8000
+          export IP_ADDRESS=127.0.0.1
+          export JWT_SECRET_KEY=SECRET_KEY
+          export DB_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 
       - name: Запуск приложения
         run: |

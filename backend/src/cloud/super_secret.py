@@ -1,1 +1,4 @@
-SERVICE_ACCOUNT_INFO = """{}"""
+SERVICE_ACCOUNT_INFO = """
+{
+}
+"""
