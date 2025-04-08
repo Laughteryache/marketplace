@@ -56,17 +56,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Конфигурация переменных окружиения
+        env:
+          POOL_SIZE: 500
+          MAX_OVERFLOW: 100
+          SERVER_PORT: 8000
+          IP_ADDRESS: 127.0.0.1
+          JWT_SECRET_KEY: SECRET_KEY
+          DB_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+
       - name: Запуск приложения
         run: |
           cd marketplace/backend/src
           python main.py &  # Запускаем в фоне
           sleep 2  # Ждем, пока сервер поднимется
-        env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 
       - name: Запуск тестов
-        env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
         run: |
           cd marketplace/backend
           pytest --disable-warnings --maxfail=1
