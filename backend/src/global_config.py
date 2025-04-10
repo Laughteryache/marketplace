@@ -2,8 +2,8 @@ from pydantic_settings import BaseSettings
 from time import time
 from loguru import logger
 from datetime import timedelta
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 

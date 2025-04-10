@@ -49,7 +49,7 @@ async def check_uploaded_file(
         raise HTTPException(status_code=400, detail=f"File size exceeds {MAX_FILE_SIZE / 1024 / 1024} MB.")
     try:
         new_file_name = await random_file_name()
-        new_file_path = f"uploaded_files/{new_file_name}{file_extension}"
+        new_file_path = f"backend/src/uploaded_files/{new_file_name}{file_extension}"
         content = await file.read()
         async with aiofiles.open(new_file_path, "wb") as f:
             await f.write(content)
