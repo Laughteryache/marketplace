@@ -3,8 +3,8 @@ from sqlalchemy import update, select
 from loguru import logger
 from typing import List
 
-from db_core.tables import BusinessProfile, BusinessFinance, UsersBalance
-from .models import BusinessProfileScheme
+from backend.src.db_core.tables import BusinessProfile, BusinessFinance, UsersBalance
+from backend.src.profile.models import BusinessProfileScheme
 
 class BusinessDB:
     @staticmethod
