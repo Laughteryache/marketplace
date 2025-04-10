@@ -19,7 +19,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -55,7 +55,7 @@ jobs:
 
       - name: Создание таблиц
         run: |
-          cd marketplace/backend/sql
+          cd marketplace
           psql postgresql://postgres:postgres@localhost:5432/postgres -f tables.sql
 
       - name: Установка зависимостей
@@ -66,13 +66,12 @@ jobs:
 
       - name: Запуск приложения
         run: |
-          cd marketplace/backend/src
-          python main.py &  # Запускаем в фоне
+          python backend/src/main.py &  # Запускаем в фоне
           sleep 2  # Ждем, пока сервер поднимется
 
       - name: Запуск тестов
         run: |
-          cd marketplace/backend
+          cd marketplace
           pytest --disable-warnings --maxfail=1
 
       - name: Остановка сервера
