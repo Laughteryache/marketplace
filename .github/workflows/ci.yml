@@ -60,12 +60,13 @@ jobs:
 
       - name: Установка зависимостей
         run: |
-          cd marketplace/backend
+          cd marketplace
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r backend/requirements.txt
 
       - name: Запуск приложения
         run: |
+          сd marketplace
           python backend/src/main.py &  # Запускаем в фоне
           sleep 2  # Ждем, пока сервер поднимется
 
