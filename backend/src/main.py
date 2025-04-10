@@ -9,7 +9,7 @@ from products.router import router as product_router
 from profile.router import router as profile_router
 from orders.router import router as order_router
 
-from loguru import logger  # In the future, logging will occur on hosting instead of a log file # ElasticSearch in progress!
+from loguru import logger
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 import time
