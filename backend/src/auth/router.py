@@ -122,19 +122,23 @@ async def get_user_info(
         token_payload: JWTAuth = Depends(get_payload_by_access_token),
         session: AsyncSession = Depends(db_helper.get_async_session),
 ) -> JSONResponse:
+    role = None
     if token_payload.role == 'user':
         user_data = await UsersDB.get_data_by_id(user_id=token_payload.uid,
                                                  session=session)
+        role = user_data.role
     elif token_payload.role == 'business':
-        user_data = await BusinessDB.get_data_by_id(user_id=token_payload.uid,
+        user_data = await BusinessDB.get_data_by_id(business_id=token_payload.uid,
                                                     session=session)
+        role = 'business'
     if not user_data:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     if user_data.is_deleted:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
     return {
         'id': user_data.id,
-        'role': user_data.role,
+        'role': role,
         'email': user_data.email,
     }
 
