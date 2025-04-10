@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update, select, delete
+from sqlalchemy import update, select, delete, Integer, cast, func
+from sqlalchemy.dialects.postgresql import array, ARRAY
+
 from db_core.tables import UsersCart
 
 from loguru import logger
@@ -57,14 +59,38 @@ class UsersDB:
     ) -> bool:
         result = await session.execute(
             select(UsersCart)
-            .where(UsersCart.user_id==int(user_id)))
+            .where(UsersCart.user_id == int(user_id)))
         user = result.scalar()
-        if product_id not in user.shopping_cart:
+
+        if not user or not user.shopping_cart:
             return False
-        updated_cart = user.shopping_cart.remove(product_id)
+        try:
+            updated_cart = user.shopping_cart.copy()
+            updated_cart.remove(product_id)
+        except ValueError:
+            return False
+
         await session.execute(
             update(UsersCart)
-            .where(UsersCart.user_id==int(user_id))
+            .where(UsersCart.user_id == int(user_id))
             .values(shopping_cart=updated_cart))
         await session.commit()
         return True
+
+    @staticmethod
+    @logger.catch
+    async def add_cart_item(
+            product_id: int,
+            user_id: int,
+            session: AsyncSession,
+    ) -> None:
+        await session.execute(
+            update(UsersCart)
+            .where(UsersCart.user_id==int(user_id))
+            .values(
+                shopping_cart=(
+                        func.coalesce(
+                            UsersCart.shopping_cart,
+                            cast(array([], type_=ARRAY(Integer)), ARRAY(Integer))
+                        ) + array([product_id]))))
+        await session.commit()

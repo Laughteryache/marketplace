@@ -44,7 +44,7 @@ async def drop_user_cart(
     await UsersDB.drop_cart_items(session=session,user_id=token_payload.uid,)
     return {'status': 'ok'}
 
-@router.patch('/user/cart/{product_id}')
+@router.patch('/user/cart/{product_id}/delete')
 async def drop_item_in_cart(
         product_id: int,
         token_payload: TokenPayload = Depends(get_payload_by_access_token),
@@ -59,4 +59,17 @@ async def drop_item_in_cart(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail='Item not in cart')
+    return {'status': 'ok'}
+
+@router.patch('/user/cart/{product_id}/add')
+async def add_item_to_cart(
+        product_id: int,
+        token_payload: TokenPayload = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if token_payload.role != 'user':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='Only users have shopping cart')
+    await UsersDB.add_cart_item(session=session, product_id=product_id,
+                                             user_id=token_payload.uid)
     return {'status': 'ok'}
