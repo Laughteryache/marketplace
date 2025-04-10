@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status, Cookie, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db_core.helper import db_helper
-from global_config import settings
-from global_dependencies import get_payload_by_access_token
+from backend.src.db_core.helper import db_helper
+from backend.src.global_config import settings
+from backend.src.global_dependencies import get_payload_by_access_token
 
-from .models import SignUpScheme, SignInScheme
-from .db import BusinessDB, UsersDB
-from .utils import JWTAuth
+from backend.src.auth.models import SignUpScheme, SignInScheme
+from backend.src.auth.db import BusinessDB, UsersDB
+from backend.src.auth.utils import JWTAuth
 
 router = APIRouter(
     prefix=settings.prefix.AUTH,

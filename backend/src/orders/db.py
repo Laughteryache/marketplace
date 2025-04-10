@@ -2,15 +2,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update, select, delete, Integer, cast, func
 from sqlalchemy.dialects.postgresql import array, ARRAY
 
-from db_core.tables import UsersCart
-
 from loguru import logger
 from collections import Counter
 from typing import List
 
-from products.db import BusinessDB
-from .models import ProductCartInfo
-
+from backend.src.db_core.tables import UsersCart
+from backend.src.products.db import BusinessDB
+from backend.src.orders.models import ProductCartInfo
 
 class UsersDB:
 

@@ -2,12 +2,12 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from global_config import settings
+from backend.src.global_config import settings
 
-from auth.router import router as auth_router
-from products.router import router as product_router
-from profile.router import router as profile_router
-from orders.router import router as order_router
+from backend.src.auth.router import router as auth_router
+from backend.src.products.router import router as product_router
+from backend.src.profile.router import router as profile_router
+from backend.src.orders.router import router as order_router
 
 from loguru import logger
 from contextlib import asynccontextmanager

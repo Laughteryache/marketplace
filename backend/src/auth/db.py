@@ -1,11 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, text
+from sqlalchemy import select, text, insert
 from datetime import datetime
 from loguru import logger
 
-from .models import SignUpScheme, SignInScheme
-from .utils import HashSecurity
-from db_core.tables import (User, UsersBalance, UsersCart, UsersProfile,
+from backend.src.auth.models import SignUpScheme, SignInScheme
+from backend.src.auth.utils import HashSecurity
+from backend.src.db_core.tables import (User, UsersBalance, UsersCart, UsersProfile,
                                 Business, BusinessFinance, BusinessProfile)
 
 class BusinessDB:
@@ -29,20 +29,15 @@ class BusinessDB:
             session: AsyncSession,
             creds: SignUpScheme
     ) -> str:
-
         hashed_password = await HashSecurity.get_hash(creds.password)
 
-        query = text("""
-            INSERT INTO businesses (email, hashed_password, is_deleted)
-            VALUES ( :email, :hashed_password, FALSE)
-            RETURNING id;""")
-
-        result = await session.execute(query, {
-            "email": creds.email,
-            "hashed_password": hashed_password
-        })
+        result = await session.execute(
+            insert(Business)
+            .values(email=creds.email,
+                    hashed_password=hashed_password,
+                    is_deleted=False)
+            .returning(Business.id))
         await session.commit()
-
         business_id = result.scalar()
 
         registration_data = [
@@ -120,16 +115,11 @@ class UsersDB:
             creds: SignUpScheme
     ) -> str:
         hashed_password = await HashSecurity.get_hash(creds.password)
-
-        query = text("""
-            INSERT INTO users (email, hashed_password, role, is_deleted)
-            VALUES (:email, :hashed_password, :role, FALSE)
-            RETURNING id;""")
-        result = await session.execute(query, {
-            "email": creds.email,
-            "hashed_password": hashed_password,
-            "role": 'user'
-        })
+        result = await session.execute(
+            insert(User)
+            .values(email=creds.email, hashed_password=hashed_password,
+                    role=creds.role, is_deleted=False)
+            .returning(User.id))
 
         await session.commit()
         user_id = result.scalar()

@@ -3,11 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from global_config import settings
-from global_dependencies import TokenPayloadModel, get_payload_by_access_token
-from db_core.helper import db_helper
+from backend.src.global_config import settings
+from backend.src.global_dependencies import TokenPayloadModel, get_payload_by_access_token
+from backend.src.db_core.helper import db_helper
 
-from .db import UsersDB
+from backend.src.orders.db import UsersDB
 
 router = APIRouter(
     tags=['orders'],
@@ -60,7 +60,6 @@ async def drop_item_in_cart(
             status_code=status.HTTP_409_CONFLICT,
             detail='Item not in cart')
     return {'status': 'ok'}
-
 @router.patch('/user/cart/{product_id}/add')
 async def add_item_to_cart(
         product_id: int,

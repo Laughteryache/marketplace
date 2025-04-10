@@ -2,7 +2,7 @@ from authx import AuthX, TokenPayload
 from argon2 import PasswordHasher
 from loguru import logger
 
-from .config import authx_config
+from backend.src.auth.config import authx_config
 
 ph = PasswordHasher()
 authx_security = AuthX(config=authx_config)
