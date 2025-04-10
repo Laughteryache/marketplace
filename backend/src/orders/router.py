@@ -10,7 +10,7 @@ from db_core.helper import db_helper
 from .db import UsersDB
 
 router = APIRouter(
-    tags=['Orders'],
+    tags=['orders'],
     prefix=settings.prefix.ORDER,
 )
 
@@ -34,7 +34,7 @@ async def get_user_cart(
     return user_cart
 
 @router.delete('/user/cart')
-async def delete_user_cart(
+async def drop_user_cart(
         token_payload: TokenPayload = Depends(get_payload_by_access_token),
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
@@ -42,4 +42,21 @@ async def delete_user_cart(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Only users have shopping cart')
     await UsersDB.drop_cart_items(session=session,user_id=token_payload.uid,)
+    return {'status': 'ok'}
+
+@router.patch('/user/cart/{product_id}')
+async def drop_item_in_cart(
+        product_id: int,
+        token_payload: TokenPayload = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if token_payload.role != 'user':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='Only users have shopping cart')
+    if not await UsersDB.drop_cart_item(session=session,
+                                    user_id=token_payload.uid,
+                                    product_id=product_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='Item not in cart')
     return {'status': 'ok'}

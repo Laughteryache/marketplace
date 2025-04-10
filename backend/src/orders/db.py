@@ -47,3 +47,24 @@ class UsersDB:
             .where(UsersCart.user_id==int(user_id))
         )
         await session.commit()
+
+    @staticmethod
+    @logger.catch
+    async def drop_cart_item(
+            user_id: int,
+            product_id: int,
+            session: AsyncSession,
+    ) -> bool:
+        result = await session.execute(
+            select(UsersCart)
+            .where(UsersCart.user_id==int(user_id)))
+        user = result.scalar()
+        if product_id not in user.shopping_cart:
+            return False
+        updated_cart = user.shopping_cart.remove(product_id)
+        await session.execute(
+            update(UsersCart)
+            .where(UsersCart.user_id==int(user_id))
+            .values(shopping_cart=updated_cart))
+        await session.commit()
+        return True
