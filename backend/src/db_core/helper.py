@@ -3,8 +3,8 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import (create_async_engine, AsyncEngine,
                                     async_sessionmaker, AsyncSession)
 
-from global_config import settings
-from db_core.tables import *
+from backend.src.global_config import settings
+from backend.src.db_core.tables import *
 
 
 
