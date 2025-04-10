@@ -1,14 +1,12 @@
-import time
-
-from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, update
+from loguru import logger
 from typing import List
-
 import datetime
+import time
 
-from .models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
-from db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category, Business
+from backend.src.products.models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
+from backend.src.db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category, Business
 
 
 class BusinessDB:
@@ -20,17 +18,15 @@ class BusinessDB:
             business_id: id,
             session: AsyncSession
     ) -> str:
-        query = text("""
-            INSERT INTO products (price, name, category_id, creator_id, is_deleted)
-            VALUES (:price, :name, :category_id, :creator_id, FALSE)
-            RETURNING id;""")
-
-        result = await session.execute(query, {
-            "price": creds.price,
-            "name": creds.name,
-            "category_id": creds.category_id,
-            "creator_id": business_id})
+        result = await session.execute(
+            insert(Product)
+            .values(price=creds.price, name=creds.name,
+                    category_id=creds.category_id,
+                    creator_id=creds.creator_id,
+                    is_deleted=False)
+            .returning(Product.id))
         await session.commit()
+
         product_id = result.scalar()
         registration_data = [
             ProductQuantity(

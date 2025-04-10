@@ -3,14 +3,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing_extensions import List
 
-from db_core.helper import db_helper
-from cloud.file_uploader import delete_file, get_new_avatar_id
+from backend.src.db_core.helper import db_helper
+from backend.src.cloud.file_uploader import delete_file, get_new_avatar_id
 
-from .db import BusinessDB
-from .models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
+from backend.src.products.db import BusinessDB
+from backend.src.products.models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
 
-from global_dependencies import get_payload_by_access_token, TokenPayloadModel, check_uploaded_file
-from global_config import settings
+from backend.src.global_dependencies import get_payload_by_access_token, TokenPayloadModel, check_uploaded_file
+from backend.src.global_config import settings
 
 
 router = APIRouter(
