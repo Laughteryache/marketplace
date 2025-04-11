@@ -60,21 +60,18 @@ jobs:
 
       - name: Установка зависимостей
         run: |
-          cd marketplace
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
       - name: Запуск приложения
         run: |
-          сd marketplace
           python backend/src/main.py &  # Запускаем в фоне
           sleep 2  # Ждем, пока сервер поднимется
 
       - name: Запуск тестов
         run: |
-          cd marketplace
           pytest --disable-warnings --maxfail=1
 
-      - name: Остановка сервера
+      - name: Остановка приложения
         run: |
           pkill -f "python main.py" || true  # Останавливаем сервер
