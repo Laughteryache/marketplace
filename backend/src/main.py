@@ -1,18 +1,18 @@
+import time
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 from backend.src.global_config import settings
 
 from backend.src.auth.router import router as auth_router
+from backend.src.orders.router import router as order_router
 from backend.src.products.router import router as product_router
 from backend.src.profile.router import router as profile_router
-from backend.src.orders.router import router as order_router
-
-from loguru import logger
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
-import time
 
 
 @asynccontextmanager
@@ -53,8 +53,7 @@ main_app.include_router(order_router)
 
 @main_app.get("/ping")
 async def get_ping():
-    return {"uptime": int(time.time()-settings.SERVER_START_TIME)}
-
+    return {"uptime": int(time.time() - settings.SERVER_START_TIME)}
 
 
 @logger.catch
@@ -69,4 +68,3 @@ def start_server():
 
 if __name__ == "__main__":
     start_server()
-

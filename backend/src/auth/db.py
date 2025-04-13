@@ -1,12 +1,14 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, text, insert
 from datetime import datetime
+
 from loguru import logger
+from sqlalchemy import select, insert
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.auth.models import SignUpScheme, SignInScheme
 from backend.src.auth.utils import HashSecurity
 from backend.src.db_core.tables import (User, UsersBalance, UsersCart, UsersProfile,
-                                Business, BusinessFinance, BusinessProfile)
+                                        Business, BusinessFinance, BusinessProfile)
+
 
 class BusinessDB:
 
@@ -66,7 +68,7 @@ class BusinessDB:
     ) -> str:
         result = await session.execute(
             select(Business.id)
-            .where(Business.email==creds.email))
+            .where(Business.email == creds.email))
         return result.scalar()
 
     @staticmethod
@@ -77,7 +79,7 @@ class BusinessDB:
     ) -> bool:
         result = await session.execute(
             select(Business.hashed_password)
-            .where(Business.email==creds.email))
+            .where(Business.email == creds.email))
         db_hashed_password = result.scalar()
         return await HashSecurity.verify_hash(message=creds.password, hashed_message=db_hashed_password)
 
@@ -89,7 +91,7 @@ class BusinessDB:
     ) -> Business:
         result = await session.execute(
             select(Business)
-            .where(Business.id==int(business_id)))
+            .where(Business.id == int(business_id)))
         return result.scalar()
 
 
@@ -103,7 +105,7 @@ class UsersDB:
     ) -> bool:
         result = await session.execute(
             select(User)
-            .where(User.email==creds.email))
+            .where(User.email == creds.email))
         if result.scalar():
             return False
         return True
@@ -139,7 +141,6 @@ class UsersDB:
         await session.commit()
         return user_id
 
-
     @staticmethod
     @logger.catch
     async def verify_password(
@@ -148,7 +149,7 @@ class UsersDB:
     ) -> bool:
         result = await session.execute(
             select(User.hashed_password)
-            .where(User.email==creds.email))
+            .where(User.email == creds.email))
         db_hashed_password = result.scalar()
         return await HashSecurity.verify_hash(message=creds.password, hashed_message=db_hashed_password)
 
@@ -160,7 +161,7 @@ class UsersDB:
     ) -> str:
         result = await session.execute(
             select(User.id)
-            .where(User.email==creds.email)
+            .where(User.email == creds.email)
         )
         return result.scalar()
 

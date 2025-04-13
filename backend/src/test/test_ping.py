@@ -1,6 +1,6 @@
 import pytest
-from httpx import AsyncClient
 from global_config import settings
+from httpx import AsyncClient
 
 IP_ADDRESS = settings.IP_ADDRESS
 SERVER_PORT = settings.SERVER_PORT

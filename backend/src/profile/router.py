@@ -2,12 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.global_dependencies import TokenPayloadModel, get_payload_by_access_token, check_uploaded_file
-from backend.src.global_config import settings
-
 from backend.src.cloud.file_uploader import get_new_avatar_id, delete_file
 from backend.src.db_core.helper import db_helper
-
+from backend.src.global_config import settings
+from backend.src.global_dependencies import TokenPayloadModel, get_payload_by_access_token, check_uploaded_file
 from backend.src.profile.db import BusinessDB, UsersDB
 from backend.src.profile.models import BusinessProfileScheme, ProfileInfo
 from backend.src.profile.utils import convert_to_ekb_time
@@ -16,6 +14,7 @@ router = APIRouter(
     tags=["profile"],
     prefix=settings.prefix.PROFILE,
 )
+
 
 @router.put('/business/image')
 async def upload_business_image(
@@ -39,6 +38,7 @@ async def upload_business_image(
             "file_link": f"https://drive.google.com/file/d/{file_id}/preview"
         }
     )
+
 
 @router.get('/business/image')
 async def get_business_image(
@@ -98,6 +98,7 @@ async def patch_business_profile(
             "message": "Profile updated successfully."
         }
     )
+
 
 @router.get('/business', response_model=ProfileInfo, response_model_exclude_none=True)
 async def get_business_profile(

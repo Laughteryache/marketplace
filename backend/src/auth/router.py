@@ -2,13 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Cookie, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.src.auth.db import BusinessDB, UsersDB
+from backend.src.auth.models import SignUpScheme, SignInScheme
+from backend.src.auth.utils import JWTAuth
 from backend.src.db_core.helper import db_helper
 from backend.src.global_config import settings
 from backend.src.global_dependencies import get_payload_by_access_token
-
-from backend.src.auth.models import SignUpScheme, SignInScheme
-from backend.src.auth.db import BusinessDB, UsersDB
-from backend.src.auth.utils import JWTAuth
 
 router = APIRouter(
     prefix=settings.prefix.AUTH,
@@ -35,10 +34,10 @@ async def business_sign_up(
     response.set_cookie("refresh_token", refresh_token, httponly=True)
 
     return {
-            "business_id": business_id,
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
+        "business_id": business_id,
+        'access_token': access_token,
+        'refresh_token': refresh_token
+    }
 
 
 @router.post('/business/sign-in')
@@ -48,7 +47,7 @@ async def business_sign_in(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if not await BusinessDB.verify_password(session=session,
-                                             creds=creds):
+                                            creds=creds):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password.")
@@ -63,10 +62,10 @@ async def business_sign_in(
     response.set_cookie("refresh_token", refresh_token, httponly=True)
 
     return {
-            "business_id": business_id,
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
+        "business_id": business_id,
+        'access_token': access_token,
+        'refresh_token': refresh_token
+    }
 
 
 @router.post('/user/sign-up')
@@ -87,10 +86,11 @@ async def user_sign_up(
     response.set_cookie("refresh_token", refresh_token, httponly=True)
 
     return {
-            'user_id': uid,
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
+        'user_id': uid,
+        'access_token': access_token,
+        'refresh_token': refresh_token
+    }
+
 
 @router.post('/user/sign-in')
 async def user_sign_in(
@@ -98,24 +98,25 @@ async def user_sign_in(
         creds: SignInScheme,
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
-        if not await UsersDB.verify_password(session=session,
-                                             creds=creds):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password.")
-        uid = await UsersDB.get_id(session=session,
-                                        creds=creds)
-        access_token = await JWTAuth.create_access(user_id=uid, token_for='user')
-        refresh_token = await JWTAuth.create_refresh(user_id=uid, token_for='user')
+    if not await UsersDB.verify_password(session=session,
+                                         creds=creds):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password.")
+    uid = await UsersDB.get_id(session=session,
+                               creds=creds)
+    access_token = await JWTAuth.create_access(user_id=uid, token_for='user')
+    refresh_token = await JWTAuth.create_refresh(user_id=uid, token_for='user')
 
-        response.set_cookie("access_token", access_token, httponly=True)
-        response.set_cookie("refresh_token", refresh_token, httponly=True)
+    response.set_cookie("access_token", access_token, httponly=True)
+    response.set_cookie("refresh_token", refresh_token, httponly=True)
 
-        return {
-                'user_id': uid,
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }
+    return {
+        'user_id': uid,
+        'access_token': access_token,
+        'refresh_token': refresh_token
+    }
+
 
 @router.get('/me')
 async def get_user_info(
@@ -150,7 +151,7 @@ async def refresh_access_token(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     token_payload = await JWTAuth.decode_token(refresh_token)
-    if not token_payload or token_payload=='Token expired' or token_payload.type != 'refresh':
+    if not token_payload or token_payload == 'Token expired' or token_payload.type != 'refresh':
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token.")
@@ -171,7 +172,7 @@ async def refresh_access_token(
 
     if token_owner == 'user':
         try:
-            user_data = await UsersDB.get_data_by_id(user_id = uid, session=session)
+            user_data = await UsersDB.get_data_by_id(user_id=uid, session=session)
         except:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -183,7 +184,7 @@ async def refresh_access_token(
                 detail="User account not founded.")
     elif token_owner == 'business':
         try:
-            user_data = await BusinessDB.get_data_by_id(business_id = uid, session=session)
+            user_data = await BusinessDB.get_data_by_id(business_id=uid, session=session)
         except:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -200,4 +201,4 @@ async def refresh_access_token(
 
     access_token = await JWTAuth.create_access(user_id=uid, token_for=token_owner)
     response.set_cookie("access_token", access_token, httponly=True)
-    return {'access_token': access_token }
+    return {'access_token': access_token}

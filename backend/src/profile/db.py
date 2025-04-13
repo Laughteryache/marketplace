@@ -1,10 +1,12 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update, select
-from loguru import logger
 from typing import List
+
+from loguru import logger
+from sqlalchemy import update, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.db_core.tables import BusinessProfile, BusinessFinance, UsersBalance
 from backend.src.profile.models import BusinessProfileScheme
+
 
 class BusinessDB:
     @staticmethod
@@ -62,8 +64,9 @@ class BusinessDB:
     ) -> int:
         result = await session.execute(
             select(BusinessFinance.balance)
-            .where(BusinessFinance.business_id==int(business_id)))
+            .where(BusinessFinance.business_id == int(business_id)))
         return int(result.scalar())
+
 
 class UsersDB:
 
@@ -75,6 +78,5 @@ class UsersDB:
     ) -> int:
         result = await session.execute(
             select(UsersBalance.balance)
-            .where(UsersBalance.user_id==int(user_id)))
+            .where(UsersBalance.user_id == int(user_id)))
         return int(result.scalar())
-

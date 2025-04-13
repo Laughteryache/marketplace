@@ -3,10 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.global_config import settings
-from backend.src.global_dependencies import TokenPayloadModel, get_payload_by_access_token
 from backend.src.db_core.helper import db_helper
-
+from backend.src.global_config import settings
+from backend.src.global_dependencies import get_payload_by_access_token
 from backend.src.orders.db import UsersDB
 
 router = APIRouter(
@@ -26,12 +25,13 @@ async def get_user_cart(
             detail='Only users have shopping cart')
     user_cart = await UsersDB.get_cart(
         session=session,
-        user_id=token_payload.uid,)
+        user_id=token_payload.uid, )
     if not user_cart:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Cart is empty or user doesn\'t exist')
     return user_cart
+
 
 @router.delete('/user/cart')
 async def drop_user_cart(
@@ -41,8 +41,9 @@ async def drop_user_cart(
     if token_payload.role != 'user':
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Only users have shopping cart')
-    await UsersDB.drop_cart_items(session=session,user_id=token_payload.uid,)
+    await UsersDB.drop_cart_items(session=session, user_id=token_payload.uid, )
     return {'status': 'ok'}
+
 
 @router.patch('/user/cart/{product_id}/delete')
 async def drop_item_in_cart(
@@ -54,12 +55,14 @@ async def drop_item_in_cart(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Only users have shopping cart')
     if not await UsersDB.drop_cart_item(session=session,
-                                    user_id=token_payload.uid,
-                                    product_id=product_id):
+                                        user_id=token_payload.uid,
+                                        product_id=product_id):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail='Item not in cart')
     return {'status': 'ok'}
+
+
 @router.patch('/user/cart/{product_id}/add')
 async def add_item_to_cart(
         product_id: int,
@@ -70,5 +73,5 @@ async def add_item_to_cart(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='Only users have shopping cart')
     await UsersDB.add_cart_item(session=session, product_id=product_id,
-                                             user_id=token_payload.uid)
+                                user_id=token_payload.uid)
     return {'status': 'ok'}

@@ -1,12 +1,13 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text, select, update
-from loguru import logger
-from typing import List
 import datetime
 import time
+from typing import List
 
-from backend.src.products.models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
+from loguru import logger
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from backend.src.db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category, Business
+from backend.src.products.models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
 
 
 class BusinessDB:
@@ -137,7 +138,6 @@ class BusinessDB:
         else:
             end_date = None
 
-
         if product_data.logo_path:
             return ProductGetScheme(
                 product_id=product.id,
@@ -212,7 +212,6 @@ class BusinessDB:
                     product_get_list.append(cur_product_data)
         return product_get_list
 
-
     @staticmethod
     @logger.catch
     async def save_product_image_id(
@@ -225,7 +224,6 @@ class BusinessDB:
             .where(ProductData.product_id == product_id)
             .values(logo_path=file_id))
         await session.commit()
-
 
     @staticmethod
     @logger.catch

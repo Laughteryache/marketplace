@@ -1,20 +1,23 @@
+import asyncio
+import httpx
+import json
+import os
+
+from fastapi import HTTPException
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
-from fastapi import HTTPException
-import asyncio, json, os, httpx
 from loguru import logger
 
 from backend.src.cloud.super_secret import SERVICE_ACCOUNT_INFO
-
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
 PERMISSION_URL = "https://www.googleapis.com/drive/v3/files/{}/permissions"
 UPLOAD_DIR = "backend/src/uploaded_files"
 
+
 async def random_file_name() -> str:
     return ''.join(random.choices(string.ascii_letters, k=50))
-
 
 
 @logger.catch
@@ -93,4 +96,3 @@ async def get_new_avatar_id(file_name):
         raise HTTPException(status_code=500)
     finally:
         await delete_file(file_name)
-

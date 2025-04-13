@@ -1,11 +1,12 @@
-from fastapi import File, UploadFile, HTTPException, Cookie, status
-import string
-import aiofiles
 import random
+import string
+
+import aiofiles
+from fastapi import File, UploadFile, HTTPException, Cookie
 from loguru import logger
 from pydantic import BaseModel
 
-from auth.utils import JWTAuth
+from backend.src.auth.utils import JWTAuth
 
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # ограничение 5 MB
@@ -15,6 +16,7 @@ class TokenPayloadModel(BaseModel):
     role: str
     uid: str
 
+
 async def random_file_name() -> str:
     return ''.join(random.choices(string.ascii_letters, k=50))
 
@@ -23,7 +25,7 @@ async def get_payload_by_access_token(
         access_token: str = Cookie('access_token')
 ) -> HTTPException | TokenPayloadModel:
     token_payload = await JWTAuth.decode_token(access_token)
-    if not token_payload or token_payload=='Token expired' or token_payload.type != 'access':
+    if not token_payload or token_payload == 'Token expired' or token_payload.type != 'access':
         raise HTTPException(status_code=401, detail="Invalid access token.")
     sub = token_payload.sub.split(':')
     if sub[0] not in ['user', 'business']:

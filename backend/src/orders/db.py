@@ -1,14 +1,15 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update, select, delete, Integer, cast, func
-from sqlalchemy.dialects.postgresql import array, ARRAY
-
-from loguru import logger
 from collections import Counter
 from typing import List
 
+from loguru import logger
+from sqlalchemy import update, select, Integer, cast, func
+from sqlalchemy.dialects.postgresql import array, ARRAY
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from backend.src.db_core.tables import UsersCart
-from backend.src.products.db import BusinessDB
 from backend.src.orders.models import ProductCartInfo
+from backend.src.products.db import BusinessDB
+
 
 class UsersDB:
 
@@ -20,7 +21,7 @@ class UsersDB:
     ) -> List[ProductCartInfo]:
         result = await session.execute(
             select(UsersCart)
-            .where(UsersCart.user_id==int(user_id)))
+            .where(UsersCart.user_id == int(user_id)))
         products_ids = result.scalar()
         if not products_ids.shopping_cart:
             return None
@@ -44,7 +45,7 @@ class UsersDB:
         await session.execute(
             update(UsersCart)
             .values(shopping_cart=[])
-            .where(UsersCart.user_id==int(user_id))
+            .where(UsersCart.user_id == int(user_id))
         )
         await session.commit()
 
@@ -84,7 +85,7 @@ class UsersDB:
     ) -> None:
         await session.execute(
             update(UsersCart)
-            .where(UsersCart.user_id==int(user_id))
+            .where(UsersCart.user_id == int(user_id))
             .values(
                 shopping_cart=(
                         func.coalesce(

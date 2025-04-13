@@ -1,8 +1,7 @@
-import re
 import datetime
-from fastapi import HTTPException, status
-from pydantic import BaseModel, EmailStr, field_validator, Field
 
+from fastapi import HTTPException, status
+from pydantic import BaseModel, field_validator, Field
 
 
 class BusinessUploadProductScheme(BaseModel):
@@ -12,7 +11,7 @@ class BusinessUploadProductScheme(BaseModel):
     price: int = Field(ge=1)
     sex: str
     adult_only: bool
-    start_date: datetime.date # The start date of the product availability in YYYY-MM-DD format.
+    start_date: datetime.date  # The start date of the product availability in YYYY-MM-DD format.
     end_date: datetime.date | None = None
     quanity: int = Field(ge=1)
 
@@ -23,6 +22,7 @@ class BusinessUploadProductScheme(BaseModel):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Only 2 genders are allowed: m - for male, f - for female. And u - Unisex for 2 genders')
         return sex
+
 
 class ProductGetScheme(BaseModel):
     product_id: int
@@ -37,6 +37,7 @@ class ProductGetScheme(BaseModel):
     end_date: str | None = None
     quanity: int
     creator_id: int
+
 
 class CategoryModel(BaseModel):
     category_id: int

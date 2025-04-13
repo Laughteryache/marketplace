@@ -1,8 +1,4 @@
-import re
-import datetime
-from fastapi import HTTPException, status
-from pydantic import BaseModel, EmailStr, field_validator, Field
-
+from pydantic import BaseModel, Field
 
 
 class ProfileInfo(BaseModel):

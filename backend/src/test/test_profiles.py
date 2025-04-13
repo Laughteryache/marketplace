@@ -1,8 +1,7 @@
 import pytest
-from httpx import AsyncClient
 from global_config import settings
-from .test_business_auth import sign_up as business_sign_up
-from .test_user_auth import sign_up as user_sign_up
+from httpx import AsyncClient
+
 from .testers import mike_data
 
 IP_ADDRESS = settings.IP_ADDRESS
@@ -10,12 +9,14 @@ SERVER_PORT = settings.SERVER_PORT
 
 profile = f'http://{IP_ADDRESS}:{SERVER_PORT}/v1/api/profile/business'
 
+
 @pytest.mark.asyncio
 async def test_get_profile():
     id = 1
     async with AsyncClient() as client:
         response = await client.get(url=f'{profile}?id={id}')
     assert response.status_code == 200
+
 
 @pytest.mark.asyncio
 async def test_get_profile_image():
@@ -27,6 +28,7 @@ async def test_get_profile_image():
     async with AsyncClient() as client:
         response = await client.get(url=f'{profile}/image?id={id}')
     assert response.status_code == 404
+
 
 @pytest.mark.asyncio
 async def test_patch_business_profile():

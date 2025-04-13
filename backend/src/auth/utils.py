@@ -1,11 +1,12 @@
-from authx import AuthX, TokenPayload
 from argon2 import PasswordHasher
+from authx import AuthX, TokenPayload
 from loguru import logger
 
 from backend.src.auth.config import authx_config
 
 ph = PasswordHasher()
 authx_security = AuthX(config=authx_config)
+
 
 class JWTAuth:
 

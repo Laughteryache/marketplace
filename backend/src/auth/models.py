@@ -1,8 +1,7 @@
 import re
-import datetime
+
 from fastapi import HTTPException, status
 from pydantic import BaseModel, EmailStr, field_validator, Field
-
 
 
 class SignUpScheme(BaseModel):
@@ -20,6 +19,7 @@ class SignUpScheme(BaseModel):
                        ' one lowercase letter, one digit,'
                        ' and one special character.')
         return password
+
 
 class SignInScheme(BaseModel):
     email: EmailStr

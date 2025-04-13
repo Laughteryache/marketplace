@@ -1,22 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Cookie, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing_extensions import List
 
-from backend.src.db_core.helper import db_helper
 from backend.src.cloud.file_uploader import delete_file, get_new_avatar_id
-
+from backend.src.db_core.helper import db_helper
+from backend.src.global_config import settings
+from backend.src.global_dependencies import get_payload_by_access_token, TokenPayloadModel, check_uploaded_file
 from backend.src.products.db import BusinessDB
 from backend.src.products.models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
-
-from backend.src.global_dependencies import get_payload_by_access_token, TokenPayloadModel, check_uploaded_file
-from backend.src.global_config import settings
-
 
 router = APIRouter(
     tags=["products"],
     prefix=settings.prefix.PRODUCTS
 )
+
 
 @router.post('/')
 async def create_new_product(
@@ -41,7 +39,7 @@ async def create_new_product(
         content={"product_id": product_id})
 
 
-@router.get('/', 
+@router.get('/',
             response_model=ProductGetScheme,
             response_model_exclude_none=True)
 async def get_business_product(
@@ -54,6 +52,7 @@ async def get_business_product(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Product not found')
     return product_data
+
 
 @router.get('/categories', response_model=List[CategoryModel] | CategoryModel)
 async def get_all_categories(
@@ -68,9 +67,9 @@ async def get_all_categories(
 
 @router.get('/search', response_model=List[ProductGetScheme])
 async def search_business_product(
-    name: str,
-    start_id: int | None = None,
-    session: AsyncSession = Depends(db_helper.get_async_session)
+        name: str,
+        start_id: int | None = None,
+        session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if start_id:
         products = await BusinessDB.search_product(name=name,
@@ -84,6 +83,7 @@ async def search_business_product(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Product not found')
     return products
+
 
 @router.get('/image')
 async def get_product_image(
@@ -101,6 +101,8 @@ async def get_product_image(
             detail='Product image not found'
         )
     return {"file_link": f"https://drive.google.com/file/d/{product.logo_path}/preview"}
+
+
 @router.put('/image')
 async def upload_business_product_image(
         product_id: int,
@@ -138,6 +140,7 @@ async def upload_business_product_image(
             "file_link": f"https://drive.google.com/file/d/{file_id}/preview"
         }
     )
+
 
 @router.get('/products/profile')
 async def get_all_business_products(
