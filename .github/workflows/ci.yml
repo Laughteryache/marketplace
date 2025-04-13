@@ -61,7 +61,7 @@ jobs:
 
       - name: Запуск приложения
         run: |
-          python backend/src/main.py &  # Запускаем в фоне
+          python -m backend.src.main &  # Запускаем в фоне
           sleep 2  # Ждем, пока сервер поднимется
 
       - name: Запуск тестов

@@ -59,7 +59,7 @@ async def get_ping():
 @logger.catch
 def start_server():
     uvicorn.run(
-        app='main:main_app',
+        app=main_app,
         host=settings.IP_ADDRESS,
         port=settings.SERVER_PORT,
         log_level="info",
