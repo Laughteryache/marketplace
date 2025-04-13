@@ -49,9 +49,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Клонирование приложение с dev ветки
-        run: |
-          git clone https://github.com/laughteryache/marketplace.git -b dev
 
       - name: Создание таблиц
         run: |
