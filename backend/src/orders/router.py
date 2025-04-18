@@ -75,3 +75,30 @@ async def add_item_to_cart(
     await UsersDB.add_cart_item(session=session, product_id=product_id,
                                 user_id=token_payload.uid)
     return {'status': 'ok'}
+
+@router.post('/user/order/begin')
+async def begin_order(
+        token_payload: TokenPayload = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if token_payload.role != 'user':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='Only users have shopping cart')
+    cart_state = await UsersDB.check_cart(
+        session=session,
+        user_id=int(token_payload.uid))
+    if cart_state is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User doesn\'t exists')
+    if cart_state is False:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='Cart is empty')
+    if cart_state is True:
+        if not await check_balance(session=session, user_id=int(token_payload.uid)):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail='Cart price bigger than balance')
+        # await UsersDB.register_order(session=session, user_id=int(token_payload.uid))
+    return None

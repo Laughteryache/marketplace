@@ -3,12 +3,13 @@ from typing import List
 
 from loguru import logger
 from sqlalchemy import update, select, Integer, cast, func
-from sqlalchemy.dialects.postgresql import array, ARRAY
+from sqlalchemy.dialects.postgresql import array, ARRAY, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.db_core.tables import UsersCart
+from backend.src.db_core.tables import UsersCart, Order, OrderCart, OrderDate, OrderPrice
 from backend.src.orders.models import ProductCartInfo
-from backend.src.products.db import BusinessDB
+from backend.src.products.db import BusinessDB as ProductBusinessDB
+from backend.src.profile.db import UsersDB as ProfileUsersDB
 
 
 class UsersDB:
@@ -28,7 +29,7 @@ class UsersDB:
         cart = Counter(products_ids.shopping_cart)
         serialized_cart = []
         for product_id, count in cart.items():
-            product_data = await BusinessDB.get_product(id=product_id, session=session)
+            product_data = await ProductBusinessDB.get_product(id=product_id, session=session)
             if product_data:
                 serialized_cart.append(
                     ProductCartInfo(
@@ -45,8 +46,7 @@ class UsersDB:
         await session.execute(
             update(UsersCart)
             .values(shopping_cart=[])
-            .where(UsersCart.user_id == int(user_id))
-        )
+            .where(UsersCart.user_id == int(user_id)))
         await session.commit()
 
     @staticmethod
@@ -60,15 +60,13 @@ class UsersDB:
             select(UsersCart)
             .where(UsersCart.user_id == int(user_id)))
         user = result.scalar()
-
         if not user or not user.shopping_cart:
             return False
         try:
             updated_cart = user.shopping_cart.copy()
-            updated_cart.remove(product_id)
+            updated_cart.remove(product_id, 1)
         except ValueError:
             return False
-
         await session.execute(
             update(UsersCart)
             .where(UsersCart.user_id == int(user_id))
@@ -93,3 +91,55 @@ class UsersDB:
                             cast(array([], type_=ARRAY(Integer)), ARRAY(Integer))
                         ) + array([product_id]))))
         await session.commit()
+
+    @staticmethod
+    @logger.catch
+    async def check_cart(
+            user_id: int,
+            session: AsyncSession,
+    ) -> bool | None:
+        user_cart_result = await session.execute(
+            select(UsersCart)
+            .where(UsersCart.user_id == int(user_id)))
+        user_cart = user_cart_result.scalar()
+        if not user_cart:
+            return None
+        if not user_cart.shopping_cart:
+            return False
+        cart = Counter(user_cart.shopping_cart)
+        new_cart = []
+        for product_id, count in cart.items():
+            product_data = await ProductBusinessDB.get_product(id=product_id, session=session)
+            if product_data and product_data.quantity >= count:
+                new_cart.append(product_data)
+        await session.execute(
+            update(UsersCart)
+            .where(UsersCart.user_id == int(user_id))
+            .values(shopping_cart=new_cart))
+        await session.commit()
+        return True
+
+    @staticmethod
+    @logger.catch
+    async def check_balance(
+            session: AsyncSession,
+            user_id: int,
+    ) -> bool:
+        cart = await UsersDB.get_cart(session=session, user_id=user_id)
+        cart_price = 0
+        for product in cart:
+            cart_price += product.product_data.price
+        balance = ProfileUsersDB.get_balance(session=session, user_id=user_id)
+        if cart_price > balance:
+            return False
+        return True
+
+    # @staticmethod
+    # @logger.catch
+    # async def register_order(
+    #         session: AsyncSession,
+    #         user_id: int,
+    # ) -> None:
+    #     await session.execute(
+    #         insert()
+    #     )
