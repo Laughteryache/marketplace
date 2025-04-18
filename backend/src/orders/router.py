@@ -45,7 +45,7 @@ async def drop_user_cart(
     return {'status': 'ok'}
 
 
-@router.patch('/user/cart/{product_id}/delete')
+@router.delete('/user/cart/{product_id}/delete')
 async def drop_item_in_cart(
         product_id: int,
         token_payload: TokenPayload = Depends(get_payload_by_access_token),
@@ -63,7 +63,7 @@ async def drop_item_in_cart(
     return {'status': 'ok'}
 
 
-@router.patch('/user/cart/{product_id}/add')
+@router.post('/user/cart/{product_id}/add')
 async def add_item_to_cart(
         product_id: int,
         token_payload: TokenPayload = Depends(get_payload_by_access_token),
