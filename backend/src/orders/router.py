@@ -45,7 +45,7 @@ async def drop_user_cart(
     return {'status': 'ok'}
 
 
-@router.delete('/user/cart/{product_id}/delete')
+@router.post('/user/cart/{product_id}/delete')
 async def drop_item_in_cart(
         product_id: int,
         token_payload: TokenPayload = Depends(get_payload_by_access_token),
@@ -96,9 +96,19 @@ async def begin_order(
             status_code=status.HTTP_409_CONFLICT,
             detail='Cart is empty')
     if cart_state is True:
-        if not await check_balance(session=session, user_id=int(token_payload.uid)):
+        cart = await UsersDB.get_cart(session=session, user_id=int(token_payload.uid))
+        cart_price = await UsersDB.check_balance(session=session, user_id=int(token_payload.uid), cart=cart)
+        if not cart_price:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail='Cart price bigger than balance')
-        # await UsersDB.register_order(session=session, user_id=int(token_payload.uid))
+        await UsersDB.register_order(session=session, user_id=int(token_payload.uid), cart_price=cart_price)
+
+
+
+
     return None
+
+
+
+

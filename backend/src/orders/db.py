@@ -1,3 +1,4 @@
+from datetime import datetime
 from collections import Counter
 from typing import List
 
@@ -5,8 +6,9 @@ from loguru import logger
 from sqlalchemy import update, select, Integer, cast, func
 from sqlalchemy.dialects.postgresql import array, ARRAY, insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.functions import session_user, coalesce
 
-from backend.src.db_core.tables import UsersCart, Order, OrderCart, OrderDate, OrderPrice
+from backend.src.db_core.tables import UsersCart, Order, OrderCart, OrderDate, OrderPrice, UsersBalance
 from backend.src.orders.models import ProductCartInfo
 from backend.src.products.db import BusinessDB as ProductBusinessDB
 from backend.src.profile.db import UsersDB as ProfileUsersDB
@@ -106,17 +108,6 @@ class UsersDB:
             return None
         if not user_cart.shopping_cart:
             return False
-        cart = Counter(user_cart.shopping_cart)
-        new_cart = []
-        for product_id, count in cart.items():
-            product_data = await ProductBusinessDB.get_product(id=product_id, session=session)
-            if product_data and product_data.quantity >= count:
-                new_cart.append(product_data)
-        await session.execute(
-            update(UsersCart)
-            .where(UsersCart.user_id == int(user_id))
-            .values(shopping_cart=new_cart))
-        await session.commit()
         return True
 
     @staticmethod
@@ -124,22 +115,59 @@ class UsersDB:
     async def check_balance(
             session: AsyncSession,
             user_id: int,
+            cart: list
     ) -> bool:
-        cart = await UsersDB.get_cart(session=session, user_id=user_id)
         cart_price = 0
+        if not cart:
+            return False
         for product in cart:
-            cart_price += product.product_data.price
-        balance = ProfileUsersDB.get_balance(session=session, user_id=user_id)
+            cart_price += product.product_data.price*product.quantity
+
+        balance = await ProfileUsersDB.get_balance(session=session, user_id=user_id)
         if cart_price > balance:
             return False
-        return True
+        return int(cart_price)
 
-    # @staticmethod
-    # @logger.catch
-    # async def register_order(
-    #         session: AsyncSession,
-    #         user_id: int,
-    # ) -> None:
-    #     await session.execute(
-    #         insert()
-    #     )
+    @staticmethod
+    @logger.catch
+    async def register_order(
+            session: AsyncSession,
+            user_id: int,
+            cart_price: int,
+    ) -> None:
+        order_insert_result = await session.execute(
+            insert(Order)
+            .values(
+                creator_id=user_id,
+                is_canceled=False,
+                is_deleted=False)
+            .returning(Order.id))
+        order_id = order_insert_result.scalar()
+        cart_result = await session.execute(
+            select(UsersCart.shopping_cart)
+            .where(UsersCart.user_id == int(user_id)))
+        cart = cart_result.scalar()
+        order_data = [
+            OrderDate(
+                order_id=order_id,
+                start_date=datetime.utcnow()
+            ),
+            OrderCart(
+                order_id=order_id,
+                shopping_cart=cart,
+            ),
+            OrderPrice(
+                order_id=order_id,
+                price=cart_price,
+            )]
+        session.add_all(order_data)
+        await session.execute(
+            update(UsersCart)
+            .where(UsersCart.user_id == int(user_id))
+            .values(shopping_cart=[]))
+        await session.execute(
+            update(UsersBalance)
+            .where(UsersBalance.user_id == int(user_id))
+            .values(balance=coalesce(UsersBalance.balance, 0) - 50)
+        )
+        await session.commit()
