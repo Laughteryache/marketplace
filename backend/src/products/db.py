@@ -3,7 +3,7 @@ import time
 from typing import List
 
 from loguru import logger
-from sqlalchemy import select, update
+from sqlalchemy import select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category, Business
@@ -23,7 +23,7 @@ class BusinessDB:
             insert(Product)
             .values(price=creds.price, name=creds.name,
                     category_id=creds.category_id,
-                    creator_id=creds.creator_id,
+                    creator_id=business_id,
                     is_deleted=False)
             .returning(Product.id))
         await session.commit()

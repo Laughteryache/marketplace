@@ -120,7 +120,7 @@ class UsersDB:
         result = await session.execute(
             insert(User)
             .values(email=creds.email, hashed_password=hashed_password,
-                    role=creds.role, is_deleted=False)
+                    role='user', is_deleted=False)
             .returning(User.id))
 
         await session.commit()
