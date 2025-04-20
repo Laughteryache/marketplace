@@ -25,15 +25,6 @@ class Business(Base):
     is_deleted = Column(Boolean, nullable=False)
 
 
-class Review(Base):
-    __tablename__ = 'reviews'
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    creator_id = Column(BigInteger)
-    product_id = Column(BigInteger)
-    rate = Column(SmallInteger, nullable=False)
-    is_deleted = Column(Boolean, nullable=False)
-
-
 class Product(Base):
     __tablename__ = 'products'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -60,14 +51,6 @@ class Order(Base):
     promocode_id = Column(BigInteger)
     is_canceled = Column(Boolean, nullable=False)
     is_deleted = Column(Boolean, nullable=False)
-
-
-class Promocode(Base):
-    __tablename__ = 'promocodes'
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    creator_id = Column(BigInteger)
-    product_id = Column(BigInteger)
-    name = Column(String(255), nullable=False)
 
 
 class UsersProfile(Base):
@@ -122,39 +105,11 @@ class ProductQuantity(Base):
     product_id = Column(BigInteger, primary_key=True)
     quanity = Column(BigInteger)
 
-
-class PromocodeDiscount(Base):
-    __tablename__ = 'promocode_discount'
-    promocode_id = Column(BigInteger, primary_key=True)
-    percent_off = Column(SmallInteger, nullable=False)
-    discount = Column(SmallInteger, nullable=False)
-
-
-class PromoQuantity(Base):
-    __tablename__ = 'promo_quanity'
-    promocode_id = Column(BigInteger, primary_key=True)
-    quantity = Column(BigInteger, nullable=False)
-
-
-class PromocodeDate(Base):
-    __tablename__ = 'promocode_date'
-    promocode_id = Column(BigInteger, primary_key=True)
-    start_date = Column(TIMESTAMP, nullable=False)
-    end_date = Column(TIMESTAMP)
-
-
 class ProductDate(Base):
     __tablename__ = 'product_date'
     product_id = Column(BigInteger, primary_key=True)
     start_date = Column(TIMESTAMP, nullable=False)
     end_date = Column(TIMESTAMP)
-
-
-class ReviewData(Base):
-    __tablename__ = 'reviews_data'
-    id = Column(BigInteger, primary_key=True)
-    title = Column(String(50), nullable=False)
-    description = Column(String(500), nullable=False)
 
 
 class OrderDate(Base):
@@ -168,7 +123,6 @@ class OrderPrice(Base):
     __tablename__ = 'order_price'
     order_id = Column(BigInteger, primary_key=True)
     price = Column(BigInteger, nullable=False)
-    discounted_price = Column(BigInteger, nullable=False)
 
 
 class OrderCart(Base):
