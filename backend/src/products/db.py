@@ -6,7 +6,7 @@ from loguru import logger
 from sqlalchemy import select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.db_core.tables import Product, ProductDate, ProductData, ProductQuantity, Category, Business
+from backend.src.db_core.tables import Product, ProductDate, ProductData, ProductQuanity, Category, Business
 from backend.src.products.models import BusinessUploadProductScheme, ProductGetScheme, CategoryModel
 
 
@@ -30,7 +30,7 @@ class BusinessDB:
 
         product_id = result.scalar()
         registration_data = [
-            ProductQuantity(
+            ProductQuanity(
                 product_id=product_id,
                 quanity=creds.quanity), ]
 
@@ -114,7 +114,7 @@ class BusinessDB:
         product_result = await session.execute(select(Product).where(Product.id == id))
         product_data_result = await session.execute(select(ProductData).where(ProductData.product_id == id))
         product_date_result = await session.execute(select(ProductDate).where(ProductDate.product_id == id))
-        product_quanity = await session.execute(select(ProductQuantity).where(ProductQuantity.product_id == id))
+        product_quanity = await session.execute(select(ProductQuanity).where(ProductQuanity.product_id == id))
 
         product = product_result.scalar()
         product_data = product_data_result.scalar()

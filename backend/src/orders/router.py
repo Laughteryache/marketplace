@@ -98,6 +98,17 @@ async def begin_order(
     if cart_state is True:
         cart = await UsersDB.get_cart(session=session, user_id=int(token_payload.uid))
         cart_price = await UsersDB.check_balance(session=session, user_id=int(token_payload.uid), cart=cart)
+        product_quanity = await UsersDB.check_quanity(session=session, cart=cart)
+
+        if product_quanity is not True:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    'message': 'Available quanity smaller',
+                    'product_id': product_quanity[0],
+                    'quanity_different': product_quanity[1]
+                }
+            )
         if not cart_price:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,

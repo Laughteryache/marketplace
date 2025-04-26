@@ -100,7 +100,7 @@ class ProductData(Base):
     adult_only = Column(Boolean, nullable=False)
 
 
-class ProductQuantity(Base):
+class ProductQuanity(Base):
     __tablename__ = 'product_quanity'
     product_id = Column(BigInteger, primary_key=True)
     quanity = Column(BigInteger)
