@@ -135,7 +135,7 @@ class UsersDB:
             session: AsyncSession,
             user_id: int,
             cart_price: int,
-    ) -> None:
+    ) -> int:
         order_insert_result = await session.execute(
             insert(Order)
             .values(
@@ -178,6 +178,7 @@ class UsersDB:
                 .values(quanity=coalesce(ProductQuanity.quanity, 0) - 1)
             )
         await session.commit()
+        return order_id
 
     @staticmethod
     @logger.catch

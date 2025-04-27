@@ -113,12 +113,11 @@ async def begin_order(
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail='Cart price bigger than balance')
-        await UsersDB.register_order(session=session, user_id=int(token_payload.uid), cart_price=cart_price)
-
-
-
-
-    return None
+        order_id = await UsersDB.register_order(session=session, user_id=int(token_payload.uid), cart_price=cart_price)
+        if order_id:
+            return JSONResponse(
+                status_code=status.HTTP_201_CREATED,
+                content={'order_id': order_id,})
 
 
 
