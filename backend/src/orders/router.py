@@ -117,7 +117,7 @@ async def begin_order(
         if order_id:
             return JSONResponse(
                 status_code=status.HTTP_201_CREATED,
-                content={'order_id': order_id,})
+                content={'order_id': order_id})
 
 
 
