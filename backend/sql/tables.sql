@@ -72,9 +72,9 @@ CREATE TABLE IF NOT EXISTS "users_balance"
 CREATE TABLE IF NOT EXISTS "business_finances"
 (
     "business_id" bigserial NOT NULL UNIQUE,
-    "balance"     bigint,
-    "revenue"     bigint,
-    "earnings"    bigint,
+    "balance"     float8,
+    "revenue"     float8,
+    "earnings"    float8,
     PRIMARY KEY ("business_id")
 );
 

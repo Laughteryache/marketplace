@@ -8,8 +8,8 @@ from sqlalchemy.dialects.postgresql import array, ARRAY, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import session_user, coalesce
 
-from backend.src.db_core.tables import (UsersCart, Order, OrderCart, ProductQuanity,
-                                        OrderDate, OrderPrice, UsersBalance)
+from backend.src.db_core.tables import (UsersCart, Order, OrderCart, ProductQuanity, Product,
+                                        OrderDate, OrderPrice, UsersBalance, BusinessFinance)
 from backend.src.orders.models import ProductCartInfo
 from backend.src.products.db import BusinessDB as ProductBusinessDB
 from backend.src.profile.db import UsersDB as ProfileUsersDB
@@ -151,16 +151,14 @@ class UsersDB:
         order_data = [
             OrderDate(
                 order_id=order_id,
-                start_date=datetime.utcnow()
-            ),
+                start_date=datetime.utcnow()),
             OrderCart(
                 order_id=order_id,
-                shopping_cart=cart,
-            ),
+                shopping_cart=cart),
             OrderPrice(
                 order_id=order_id,
-                price=cart_price,
-            )]
+                price=cart_price)
+        ]
         session.add_all(order_data)
         await session.execute(
             update(UsersCart)
@@ -175,8 +173,18 @@ class UsersDB:
             await session.execute(
                 update(ProductQuanity)
                 .where(ProductQuanity.product_id == id)
-                .values(quanity=coalesce(ProductQuanity.quanity, 0) - 1)
-            )
+                .values(quanity=coalesce(ProductQuanity.quanity, 0) - 1))
+            result = await session.execute(
+                select(Product)
+                .where(Product.id==id))
+            product = result.scalar()
+            await session.execute(
+                update(BusinessFinance)
+                .values(
+                    revenue=coalesce(BusinessFinance.revenue, 0) + product.price,
+                    balance=coalesce(BusinessFinance.balance, 0)+(product.price*0.98),
+                    earnings=coalesce(BusinessFinance.earnings, 0)+(product.price*0.98))
+                .where(BusinessFinance.business_id==product.creator_id))
         await session.commit()
         return order_id
 

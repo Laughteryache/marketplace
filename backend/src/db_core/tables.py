@@ -1,5 +1,6 @@
 from sqlalchemy import (Column, Integer, String, BigInteger,
-                        Boolean, SmallInteger, TIMESTAMP, ARRAY)
+                        Boolean, SmallInteger, TIMESTAMP,
+                        ARRAY, FLOAT)
 
 from sqlalchemy.orm import DeclarativeBase
 
@@ -76,9 +77,9 @@ class UsersBalance(Base):
 class BusinessFinance(Base):
     __tablename__ = 'business_finances'
     business_id = Column(BigInteger, primary_key=True)
-    balance = Column(BigInteger)
-    revenue = Column(BigInteger)
-    earnings = Column(BigInteger)
+    balance = Column(FLOAT)
+    revenue = Column(FLOAT)
+    earnings = Column(FLOAT)
 
 
 class BusinessProfile(Base):

@@ -120,5 +120,3 @@ async def begin_order(
                 content={'order_id': order_id})
 
 
-
-
