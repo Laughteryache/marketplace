@@ -3,7 +3,7 @@ from collections import Counter
 from typing import List
 
 from loguru import logger
-from sqlalchemy import update, select, Integer, cast, func
+from sqlalchemy import update, select, Integer, cast, func, text
 from sqlalchemy.dialects.postgresql import array, ARRAY, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import session_user, coalesce
@@ -67,7 +67,7 @@ class UsersDB:
             return False
         try:
             updated_cart = user.shopping_cart.copy()
-            updated_cart.remove(product_id, 1)
+            updated_cart.remove(product_id)
         except ValueError:
             return False
         await session.execute(
@@ -190,6 +190,25 @@ class UsersDB:
 
     @staticmethod
     @logger.catch
+    async def get_active_orders(
+            session: AsyncSession,
+            user_id: int,
+    ):
+        query = text("""
+        SELECT
+            oc.order_id,
+            oc.shopping_cart
+        FROM order_cart oc
+            JOIN orders o ON o.id = oc.order_id
+                WHERE o.creator_id = :user_id
+                    AND o.is_canceled = false
+                    AND o.is_deleted = false;
+        """)
+        order_result = await session.execute(query, { 'user_id': user_id })
+        return order_result.mappings().all()
+
+    @staticmethod
+    @logger.catch
     async def check_quanity(
             session: AsyncSession,
             cart: list[ProductCartInfo]
@@ -202,3 +221,35 @@ class UsersDB:
             if db_product.quanity < product.quantity:
                 return [product.product_data.product_id, product.quantity - db_product.quanity]
         return True
+
+class BusinessDB:
+
+    @staticmethod
+    @logger.catch
+    async def get_active_orders(
+            session: AsyncSession,
+            business_id: int
+    ):
+        query = text("""
+            SELECT
+                order_id,
+                filtered_cart AS shopping_cart
+            FROM (
+                SELECT
+                    order_id,
+                    ARRAY(
+                        SELECT p.id
+                        FROM unnest(shopping_cart) AS product_id
+                        JOIN products p ON p.id = product_id
+                        WHERE creator_id = :business_id AND is_deleted = false
+                    ) AS filtered_cart
+                FROM order_cart
+            ) sub
+            WHERE array_length(filtered_cart, 1) > 0; 
+        """) # Зубодробительный SQL-запрос
+        result = await session.execute(query, {"business_id": business_id})
+        return result.mappings().all()
+
+
+
+

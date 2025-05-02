@@ -53,8 +53,7 @@ class BusinessDB:
     @staticmethod
     @logger.catch
     async def get_categories(session: AsyncSession) -> List[int]:
-        result = await session.execute(select(Category.id))
-        return result.scalars().all()
+        return await session.execute(select(Category.id)).scalars().all()
 
     @staticmethod
     @logger.catch

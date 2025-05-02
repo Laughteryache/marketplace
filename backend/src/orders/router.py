@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.src.db_core.helper import db_helper
 from backend.src.global_config import settings
 from backend.src.global_dependencies import get_payload_by_access_token
-from backend.src.orders.db import UsersDB
+from backend.src.orders.db import UsersDB, BusinessDB
 
 router = APIRouter(
     tags=['orders'],
@@ -20,9 +20,7 @@ async def get_user_cart(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if token_payload.role != 'user':
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail='Only users have shopping cart')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     user_cart = await UsersDB.get_cart(
         session=session,
         user_id=token_payload.uid, )
@@ -39,8 +37,7 @@ async def drop_user_cart(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if token_payload.role != 'user':
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='Only users have shopping cart')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     await UsersDB.drop_cart_items(session=session, user_id=token_payload.uid, )
     return {'status': 'ok'}
 
@@ -52,8 +49,7 @@ async def drop_item_in_cart(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if token_payload.role != 'user':
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='Only users have shopping cart')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     if not await UsersDB.drop_cart_item(session=session,
                                         user_id=token_payload.uid,
                                         product_id=product_id):
@@ -70,11 +66,26 @@ async def add_item_to_cart(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> JSONResponse:
     if token_payload.role != 'user':
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='Only users have shopping cart')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     await UsersDB.add_cart_item(session=session, product_id=product_id,
                                 user_id=token_payload.uid)
     return {'status': 'ok'}
+
+@router.get('/user/order/active')
+async def get_user_orders(
+        token_payload: TokenPayload = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if token_payload.role != 'user':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    active_orders = await UsersDB.get_active_orders(
+        session=session,
+        user_id=int(token_payload.uid))
+    if not active_orders:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='No active orders')
+    return active_orders
 
 @router.post('/user/order/begin')
 async def begin_order(
@@ -106,9 +117,7 @@ async def begin_order(
                 detail={
                     'message': 'Available quanity smaller',
                     'product_id': product_quanity[0],
-                    'quanity_different': product_quanity[1]
-                }
-            )
+                    'quanity_different': product_quanity[1]})
         if not cart_price:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -119,4 +128,13 @@ async def begin_order(
                 status_code=status.HTTP_201_CREATED,
                 content={'order_id': order_id})
 
-
+@router.get('/business/order/active')
+async def get_active_orders(
+        token_payload: TokenPayload = Depends(get_payload_by_access_token),
+        session: AsyncSession = Depends(db_helper.get_async_session)
+) -> JSONResponse:
+    if token_payload.role != 'business':
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    active_orders = await BusinessDB.get_active_orders(session=session,
+                                                       business_id=int(token_payload.uid))
+    return active_orders

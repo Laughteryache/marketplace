@@ -48,8 +48,6 @@ class Order(Base):
     __tablename__ = 'orders'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     creator_id = Column(BigInteger)
-    business_id = Column(BigInteger)
-    promocode_id = Column(BigInteger)
     is_canceled = Column(Boolean, nullable=False)
     is_deleted = Column(Boolean, nullable=False)
 
